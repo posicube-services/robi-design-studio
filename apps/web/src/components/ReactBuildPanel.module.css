@@ -1,0 +1,167 @@
+/* Wrapper that takes FileWorkspace's slot in ProjectView's horizontal
+ * split and stacks the preview panel above the workspace. `display: contents`
+ * passthrough keeps non-react-project layouts byte-identical. */
+.workspaceColumn {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspaceColumn > :last-child {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.workspaceColumnPassthrough {
+  display: contents;
+}
+
+.panel {
+  /* Fills FileWorkspace's main viewer area (it replaces FileViewer for
+   * react-project), so it takes the full width/height of that slot. */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--od-surface, #fafafa);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Live / Build segmented toggle */
+.toggle {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--od-border, #ececef);
+}
+
+.toggleBtn,
+.toggleActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--od-text-muted, #6e6e73);
+}
+
+.toggleActive {
+  background: var(--od-surface, #fff);
+  color: var(--od-text, #1d1d1f);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--od-text-muted, #c4c4c7);
+}
+.liveDot[data-on='true'] {
+  background: #1a7f37;
+  box-shadow: 0 0 0 3px rgba(26, 127, 55, 0.18);
+}
+
+.status {
+  font-size: 12px;
+  color: var(--od-text-muted, #6e6e73);
+}
+.status[data-status='running'],
+.status[data-status='succeeded'] {
+  color: #1a7f37;
+}
+.status[data-status='failed'] {
+  color: #cf222e;
+}
+.status[data-status='installing'],
+.status[data-status='starting'],
+.status[data-status='building'] {
+  color: var(--od-accent, #0071e3);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.openExternal {
+  font-size: 12px;
+  color: var(--od-accent, #0071e3);
+  text-decoration: none;
+}
+.openExternal:hover {
+  text-decoration: underline;
+}
+
+.logToggle {
+  border: 0;
+  background: transparent;
+  color: var(--od-text-muted, #6e6e73);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+/* Preview surface */
+.previewArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--od-border, #e3e3e6);
+}
+
+.previewFrame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #fff;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--od-text-muted, #6e6e73);
+}
+
+.log {
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--od-code-bg, #1d1d1f);
+  color: var(--od-code-fg, #f5f5f7);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

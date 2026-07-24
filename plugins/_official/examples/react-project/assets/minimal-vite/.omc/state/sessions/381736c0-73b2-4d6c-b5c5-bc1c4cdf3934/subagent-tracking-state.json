@@ -1,0 +1,17 @@
+{
+  "agents": [
+    {
+      "agent_id": "a60b0bae2f8f9ab00",
+      "agent_type": "oh-my-claudecode:executor",
+      "started_at": "2026-06-15T03:07:17.665Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-06-15T03:13:14.571Z",
+      "duration_ms": 356906
+    }
+  ],
+  "total_spawned": 1,
+  "total_completed": 9,
+  "total_failed": 0,
+  "last_updated": "2026-06-15T03:13:14.674Z"
+}

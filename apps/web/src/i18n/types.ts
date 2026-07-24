@@ -4391,4 +4391,20 @@ export interface Dict {
   'questions.uploadNeedsProject': string;
   'questions.uploadPartialFailed': string;
   'questions.uploadFailed': string;
+  'generationPreview.title': string;
+  'generationPreview.failedTitle': string;
+  'generationPreview.failedFallback': string;
+  'generationPreview.footnote': string;
+  'generationPreview.stepUnderstand': string;
+  'generationPreview.stepGenerate': string;
+  'generationPreview.stepPrepare': string;
+  'generationPreview.retry': string;
+  'generationPreview.awaitingTitle': string;
+  'generationPreview.awaitingLead': string;
+  'generationPreview.stoppedTitle': string;
+  'generationPreview.stoppedLead': string;
+  'generationPreview.reasonAuth': string;
+  'generationPreview.reasonRateLimited': string;
+  'generationPreview.reasonService': string;
+  'generationPreview.reasonBalance': string;
 }

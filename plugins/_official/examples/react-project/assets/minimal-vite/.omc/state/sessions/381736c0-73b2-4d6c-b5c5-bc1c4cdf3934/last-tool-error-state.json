@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd /Users/hskang/poc/open-design/plugins/_official/examples/react-project/assets/minimal-vite\\necho \\\"=== core imports from src/routes/ ===\\\" \\ngrep -rhoE \\\"from 'src/routes[^']*'\\\" src/co...",
+  "error": "Exit code 1\n=== core imports from src/routes/ ===\nfrom 'src/routes/components'\nfrom 'src/routes/hooks'\nfrom 'src/routes/paths'\n=== orig routes files ===\nindex.ts\nuse-params.ts\nuse-pathname.ts\nuse-router.ts\nuse-search-params.ts\n=== vite paths.ts vs orig paths.ts diff ===\n2a3,4\n> import { _id, _postTitles } from 'src/_mock/assets';\n> \n5,6c7,8\n< const MOCK_ID = 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1';\n< const MOCK_TITLE = 'The Ultimate Guide to Anti-Aging: How to Look and Feel Younger';\n---\n> const ...",
+  "timestamp": "2026-06-15T03:07:56.808Z",
+  "retry_count": 1
+}

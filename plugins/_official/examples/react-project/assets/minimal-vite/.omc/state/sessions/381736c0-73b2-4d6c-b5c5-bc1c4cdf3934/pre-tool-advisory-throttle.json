@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "entries": {
+    "445ed27a3872b681d98190bae61ccb84954e1bc4e140df5370be958dee776b3a": {
+      "last_emitted_at_ms": 1781492911606,
+      "message": "Verify changes work after editing. Test functionality before marking complete."
+    },
+    "79a93d4a2f8f50b95f852280616242fee1855dc99a3c75211917f55e72e95fae": {
+      "last_emitted_at_ms": 1781492841491,
+      "message": "Use parallel execution for independent tasks. Use run_in_background for long operations (npm install, builds, tests)."
+    },
+    "931e84945a00aecd9262bbc2492c4e8737df75ba5292da089a7d947fbbe2acbc": {
+      "last_emitted_at_ms": 1781492837596,
+      "message": "Spawning agent: oh-my-claudecode:executor (opus) [BACKGROUND] | Task: Build minimal Next.js curated seed"
+    }
+  },
+  "updated_at": "2026-06-15T03:08:31.606Z"
+}

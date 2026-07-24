@@ -1,0 +1,437 @@
+/* ─────────────────────────────────────────────────────────────────────────
+ * design-systems/mui-minimal/tokens.css
+ *
+ * Structured token bindings for "Minimal MUI" — the dashboard / SaaS
+ * surface kit ported from the Minimal_Web Figma file
+ * (jsT3dVXUUS7iHkk4CGY8oe). Agents are expected to paste the `:root`
+ * block verbatim into the first `<style>` of every artifact they
+ * generate against this design system, then reference tokens via
+ * `var(--…)` from then on.
+ *
+ * Two layers live in this file:
+ *
+ * 1. STANDARD SCHEMA TOKENS — the cross-brand contract enforced by
+ *    `apps/daemon/src/lint-artifact.ts`:
+ *      --bg / --surface / --fg / --muted / --border / --accent
+ *      / --success / --warn / --danger / --font-display / --font-body
+ *    The lint rejects raw hex outside :root and pushes every brand to
+ *    expose this fixed token shape so generic templates render.
+ *
+ * 2. MINIMAL-SPECIFIC TOKENS (prefix `--minimal-…`) — the rich
+ *    component-level kit Minimal_Web ships: five-stop semantic rails,
+ *    grey/500 alpha overlay ladder, per-rail brand shadows, composite
+ *    shadow/card|dropdown|dialog, and the component typography slots
+ *    (button/medium, nav/item, label/text, table/head, chip/label, …).
+ *    These mirror the Figma variable names with `/` substituted for
+ *    `-` so they survive CSS var(…) syntax.
+ *
+ * The `[data-color-scheme="dark"]` selector swaps the values that
+ * differ in Minimal's dark mode: paper, neutral surfaces, text rails,
+ * shadow color anchor, and the `swap/lighter-darker-*` semantic
+ * lighter/darker reversals.
+ *
+ * Every hex / alpha here is sourced from DESIGN.md (which is the
+ * Figma-variable mirror) — do not introduce values that DESIGN.md
+ * does not document.
+ * ─────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ─── Standard schema (lint contract) ────────────────────────── */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-warm: #f4f6f8;            /* grey/200 — sidebar / grouped panel */
+  --fg: #1c252e;                      /* grey/800 */
+  --fg-2: #454f5b;                    /* grey/700 */
+  --muted: #637381;                   /* grey/600 — body / secondary */
+  --meta: #919eab;                    /* grey/500 — placeholder */
+  --border: #919eab33;                /* grey/500 @ 20% */
+  --border-soft: #919eab1f;           /* grey/500 @ 12% */
+
+  --accent: #00a76f;                  /* primary.main — emerald CTA */
+  --accent-on: #ffffff;
+  --accent-hover: #007867;            /* primary.dark */
+  --accent-active: #004b50;           /* primary.darker */
+
+  --success: #22c55e;
+  --warn: #ffab00;
+  --danger: #ff5630;
+  --info: #00b8d9;
+
+  --font-display: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-body: "Public Sans Variable", "Public Sans", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "Fira Code", monospace;
+
+  /* Type scale (px) — mirrors DESIGN.md §Typography Hierarchy */
+  --text-xs: 12px;                    /* caption / overline */
+  --text-sm: 14px;                    /* body2 / subtitle2 / button-md */
+  --text-base: 16px;                  /* body1 / subtitle1 */
+  --text-lg: 20px;                    /* h5 */
+  --text-xl: 24px;                    /* h4 */
+  --text-2xl: 32px;                   /* h3 */
+  --text-3xl: 48px;                   /* h2 */
+  --text-4xl: 64px;                   /* h1 */
+  --text-hero: 72px;                  /* hero (Barlow 800) */
+
+  --leading-body: 1.5;                /* body1 24/16 */
+  --leading-tight: 1.25;              /* h1 80/64 */
+  --tracking-display: 0;              /* Minimal ships letterSpacing 0 throughout */
+
+  /* Spacing — Minimal's spacing(n) = n × 8, plus half-steps used by inputs */
+  --space-1: 4px;                     /* spacing-0,5 */
+  --space-2: 8px;                     /* spacing-1 */
+  --space-3: 12px;                    /* spacing-1,5 */
+  --space-4: 16px;                    /* spacing-2 */
+  --space-5: 20px;                    /* spacing-2,5 */
+  --space-6: 24px;                    /* spacing-3 */
+  --space-8: 32px;                    /* spacing-4 */
+  --space-12: 48px;                   /* spacing-6 */
+  --space-20: 80px;                   /* spacing-10 */
+
+  --section-y-desktop: 80px;
+  --section-y-tablet: 48px;
+  --section-y-phone: 32px;
+
+  /* Radius — DESIGN.md §Spacing, Radius, Borders */
+  --radius-sm: 8px;                   /* button / textfield / accordion default */
+  --radius-md: 12px;                  /* snackbar / menu container */
+  --radius-lg: 16px;                  /* dialog / card / paper */
+  --radius-pill: 500px;               /* iconbutton / switch / pagination circular */
+
+  /* Elevation — composite shadows live on minimal-specific tokens below */
+  --elev-flat: none;
+  --elev-ring: 0 0 0 1px var(--border);
+  --elev-raised: 0 1px 2px #919eab29; /* shadow/z1 light-mode */
+
+  /* Focus ring — emerald @ 24% per Minimal's primary action contract */
+  --focus-ring: 0 0 0 3px #00a76f3d;
+
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout */
+  --container-max: 1440px;
+  --container-gutter-desktop: 40px;   /* header desktop px */
+  --container-gutter-tablet: 24px;
+  --container-gutter-phone: 16px;
+
+  /* ─── Minimal-specific tokens ────────────────────────────────── */
+
+  /* Grey ladder (DESIGN.md §2) */
+  --minimal-grey-50:  #fcfdfd;
+  --minimal-grey-100: #f9fafb;
+  --minimal-grey-200: #f4f6f8;
+  --minimal-grey-300: #dfe3e8;
+  --minimal-grey-400: #c4cdd5;
+  --minimal-grey-500: #919eab;
+  --minimal-grey-600: #637381;
+  --minimal-grey-700: #454f5b;
+  --minimal-grey-800: #1c252e;
+  --minimal-grey-900: #141a21;
+
+  /* Grey/500 alpha overlay ladder (action.* + soft fills + borders) */
+  --minimal-grey-8:  #919eab14;       /* action.hover */
+  --minimal-grey-12: #919eab1f;       /* slider rail bg */
+  --minimal-grey-16: #919eab29;       /* action.selected / soft inherit bg / shadow/16% */
+  --minimal-grey-20: #919eab33;       /* divider / input outlined border */
+  --minimal-grey-24: #919eab3d;       /* action.focus / disabled bg / shadow/24% */
+  --minimal-grey-32: #919eab52;       /* outlined button border / soft hover */
+  --minimal-grey-40: #919eab66;
+  --minimal-grey-48: #919eab7a;       /* switch off-track / slider marks / rating empty */
+  --minimal-grey-56: #919eab8f;
+  --minimal-grey-64: #919eaba3;
+  --minimal-grey-72: #919eabb8;
+  --minimal-grey-80: #919eabcc;       /* action.disabled (text/icon) */
+
+  /* Primary rail — emerald */
+  --minimal-primary-lighter: #c8fad6;
+  --minimal-primary-light:   #5be49b;
+  --minimal-primary-main:    #00a76f;
+  --minimal-primary-dark:    #007867;
+  --minimal-primary-darker:  #004b50;
+  --minimal-primary-contrast: #ffffff;
+  --minimal-primary-8:  #00a76f14;
+  --minimal-primary-12: #00a76f1f;
+  --minimal-primary-16: #00a76f29;
+  --minimal-primary-20: #00a76f33;
+  --minimal-primary-24: #00a76f3d;
+  --minimal-primary-32: #00a76f52;
+  --minimal-primary-40: #00a76f66;
+  --minimal-primary-48: #00a76f7a;
+
+  /* Secondary rail — violet */
+  --minimal-secondary-lighter: #efd6ff;
+  --minimal-secondary-light:   #c684ff;
+  --minimal-secondary-main:    #8e33ff;
+  --minimal-secondary-dark:    #5119b7;
+  --minimal-secondary-darker:  #27097a;
+  --minimal-secondary-contrast: #ffffff;
+  --minimal-secondary-8:  #8e33ff14;
+  --minimal-secondary-16: #8e33ff29;
+  --minimal-secondary-24: #8e33ff3d;
+  --minimal-secondary-48: #8e33ff7a;
+
+  /* Info rail — cyan */
+  --minimal-info-lighter: #cafdf5;
+  --minimal-info-light:   #61f3f3;
+  --minimal-info-main:    #00b8d9;
+  --minimal-info-dark:    #006c9c;
+  --minimal-info-darker:  #003768;
+  --minimal-info-contrast: #ffffff;
+  --minimal-info-8:  #00b8d914;
+  --minimal-info-16: #00b8d929;
+  --minimal-info-24: #00b8d93d;
+  --minimal-info-48: #00b8d97a;
+
+  /* Success rail — green */
+  --minimal-success-lighter: #d3fcd2;
+  --minimal-success-light:   #77ed8b;
+  --minimal-success-main:    #22c55e;
+  --minimal-success-dark:    #118d57;
+  --minimal-success-darker:  #065e49;
+  --minimal-success-contrast: #ffffff;
+  --minimal-success-8:  #22c55e14;
+  --minimal-success-16: #22c55e29;
+  --minimal-success-24: #22c55e3d;
+  --minimal-success-48: #22c55e7a;
+
+  /* Warning rail — amber (dark contrast text) */
+  --minimal-warning-lighter: #fff5cc;
+  --minimal-warning-light:   #ffd666;
+  --minimal-warning-main:    #ffab00;
+  --minimal-warning-dark:    #b76e00;
+  --minimal-warning-darker:  #7a4100;
+  --minimal-warning-contrast: #1c252e;
+  --minimal-warning-8:  #ffab0014;
+  --minimal-warning-16: #ffab0029;
+  --minimal-warning-24: #ffab003d;
+  --minimal-warning-48: #ffab007a;
+
+  /* Error rail — coral */
+  --minimal-error-lighter: #ffe9d5;
+  --minimal-error-light:   #ffac82;
+  --minimal-error-main:    #ff5630;
+  --minimal-error-dark:    #b71d18;
+  --minimal-error-darker:  #7a0916;
+  --minimal-error-contrast: #ffffff;
+  --minimal-error-8:  #ff563014;
+  --minimal-error-16: #ff563029;
+  --minimal-error-24: #ff56303d;
+  --minimal-error-48: #ff56307a;
+
+  /* Surface / text roles (DESIGN.md §2 surface & text) */
+  --minimal-bg-default:      #ffffff;
+  --minimal-bg-paper:        #ffffff;
+  --minimal-bg-paper-blur:   #ffffffe5;
+  --minimal-bg-neutral:      #f4f6f8;
+  --minimal-text-primary:    #1c252e;
+  --minimal-text-secondary:  #637381;
+  --minimal-text-disabled:   #919eab;
+  --minimal-divider:         #919eab33;
+  --minimal-backdrop:        #161c247a;
+
+  /* Action overlays */
+  --minimal-action-hover:               #919eab14;
+  --minimal-action-selected:            #919eab29;
+  --minimal-action-focus:               #919eab3d;
+  --minimal-action-active:              #637381;
+  --minimal-action-disabled:            #919eabcc;
+  --minimal-action-disabled-background: #919eab3d;
+
+  /* Shape tints (DESIGN.md §2 shape & component tints) */
+  --minimal-filled-inherit-bg:    #1c252e;
+  --minimal-filled-inherit-fg:    #ffffff;
+  --minimal-filled-inherit-hover: #454f5b;
+  --minimal-filled-default-bg:    #dfe3e8;
+  --minimal-filled-default-fg:    #1c252e;
+  --minimal-filled-default-hover: #c4cdd5;
+  --minimal-soft-inherit-bg:      #919eab29;
+  --minimal-soft-inherit-hover:   #919eab52;
+  --minimal-button-outlined:      #919eab52;
+  --minimal-input-outlined:       #919eab33;
+  --minimal-input-underline:      #919eab52;
+  --minimal-avatar-bg:            #dfe3e8;
+  --minimal-tooltip-bg:           #1c252e;
+  --minimal-tooltip-fg:           #ffffff;
+  --minimal-slider-rail:          #919eab1f;
+  --minimal-slider-marks:         #919eab7a;
+
+  /* Z-ladder (anchor: grey/500 @ 16% in light mode) */
+  --minimal-shadow-color: #919eab29;
+  --minimal-z1:  0 1px 2px 0 #919eab29;
+  --minimal-z4:  0 4px 8px 0 #919eab29;
+  --minimal-z8:  0 8px 16px 0 #919eab29;
+  --minimal-z12: 0 12px 24px -4px #919eab29;
+  --minimal-z16: 0 16px 32px -4px #919eab29;
+  --minimal-z20: 0 20px 40px -4px #919eab29;
+  --minimal-z24: 0 24px 48px 0 #919eab29;
+
+  /* Composite shadows — render as two box-shadow values */
+  --minimal-shadow-card:
+    0 12px 24px -4px #919eab1f,
+    0 0 2px 0 #919eab33;
+  --minimal-shadow-dropdown:
+    -20px 20px 40px -4px #919eab3d,
+    0 0 2px 0 #919eab3d;
+  --minimal-shadow-dialog:
+    -40px 40px 80px -8px #0000003d;
+
+  /* Per-rail brand shadows (rest state on filled-brand controls) */
+  --minimal-shadow-primary:   0 8px 16px 0 #00a76f3d;
+  --minimal-shadow-secondary: 0 8px 16px 0 #8e33ff3d;
+  --minimal-shadow-info:      0 8px 16px 0 #00b8d93d;
+  --minimal-shadow-success:   0 8px 16px 0 #22c55e3d;
+  --minimal-shadow-warning:   0 8px 16px 0 #ffab003d;
+  --minimal-shadow-error:     0 8px 16px 0 #ff56303d;
+
+  /* Backdrop blur — paired with --minimal-bg-paper-blur */
+  --minimal-blur-paper: blur(40px);
+
+  /* ─── Component typography (5-axis: family/size/lh/weight) ────── */
+  --minimal-button-sm-size: 13px;  --minimal-button-sm-lh: 22px;  --minimal-button-sm-weight: 700;
+  --minimal-button-md-size: 14px;  --minimal-button-md-lh: 24px;  --minimal-button-md-weight: 700;
+  --minimal-button-lg-size: 15px;  --minimal-button-lg-lh: 26px;  --minimal-button-lg-weight: 700;
+  --minimal-nav-item-size:   14px; --minimal-nav-item-lh: 22px;   --minimal-nav-item-weight: 500;
+  --minimal-nav-item-active-weight: 600;
+  --minimal-nav-mini-size:   10px; --minimal-nav-mini-lh: 16px;   --minimal-nav-mini-weight: 500;
+  --minimal-nav-subheader-size: 11px; --minimal-nav-subheader-lh: 18px; --minimal-nav-subheader-weight: 700;
+  --minimal-input-label-size:   12px; --minimal-input-label-lh: 18px; --minimal-input-label-weight: 600;
+  --minimal-input-text-size:    15px; --minimal-input-text-lh: 24px; --minimal-input-text-weight: 400;
+  --minimal-label-text-size:    12px; --minimal-label-text-lh: 20px; --minimal-label-text-weight: 700;
+  --minimal-chip-label-size:    13px; --minimal-chip-label-lh: 18px; --minimal-chip-label-weight: 500;
+  --minimal-tab-label-size:     14px; --minimal-tab-label-lh: 22px; --minimal-tab-label-weight: 500;
+  --minimal-table-head-size:    14px; --minimal-table-head-lh: 24px; --minimal-table-head-weight: 600;
+
+  /* ─── Component dimensions (button/icon-button/header/nav/dialog) */
+  --minimal-button-radius: 8px;
+  --minimal-button-gap: 8px;
+  --minimal-button-min-width: 64px;
+  --minimal-button-sm-min-h: 30px;  --minimal-button-sm-px: 8px;   --minimal-button-sm-py: 4px;
+  --minimal-button-md-min-h: 36px;  --minimal-button-md-px: 12px;  --minimal-button-md-py: 6px;
+  --minimal-button-lg-min-h: 48px;  --minimal-button-lg-px: 16px;  --minimal-button-lg-py: 8px;
+  --minimal-button-xl-min-h: 56px;
+
+  --minimal-iconbutton-radius: 500px;
+  --minimal-iconbutton-sm-p: 5px;     /* 26-box */
+  --minimal-iconbutton-md-p: 8px;     /* 40-box */
+  --minimal-iconbutton-lg-p: 12px;    /* 48-box */
+
+  --minimal-label-radius: 6px;
+  --minimal-label-h: 24px;
+  --minimal-label-px: 6px;
+  --minimal-label-gap: 6px;
+
+  --minimal-chip-sm-h: 24px;  --minimal-chip-sm-radius: 8px;  --minimal-chip-sm-px: 3px;  --minimal-chip-sm-gap: 5px;
+  --minimal-chip-md-h: 32px;  --minimal-chip-md-radius: 10px; --minimal-chip-md-px: 4px;  --minimal-chip-md-gap: 8px;
+
+  --minimal-badge-h: 20px;
+  --minimal-badge-px: 6px;
+  --minimal-badge-dot: 10px;
+
+  --minimal-input-radius: 8px;
+  --minimal-input-outlined-px: 14px;
+  --minimal-input-outlined-md-py: 16px;   /* 56-tall */
+  --minimal-input-outlined-sm-py: 8px;    /* 36-tall */
+  --minimal-input-outlined-md-h: 56px;
+  --minimal-input-outlined-sm-h: 36px;
+
+  --minimal-dialog-radius: 16px;
+  --minimal-dialog-px: 24px;
+  --minimal-dialog-py: 24px;
+  --minimal-dialog-gap: 16px;
+
+  --minimal-card-radius: 16px;
+  --minimal-card-px: 24px;
+  --minimal-card-py: 24px;
+
+  --minimal-tooltip-radius: 6px;
+  --minimal-tooltip-px: 6px;
+  --minimal-tooltip-py: 3px;
+
+  --minimal-snackbar-radius: 12px;
+
+  --minimal-table-cell-px: 16px;
+  --minimal-table-row-h: 72px;
+  --minimal-table-head-row-h: 56px;
+  --minimal-table-border: #919eab33;
+
+  /* Layout dimensions */
+  --minimal-header-main-desktop-h: 72px;
+  --minimal-header-main-mobile-h: 64px;
+  --minimal-header-dashboard-h: 72px;
+  --minimal-header-desktop-px: 40px;
+  --minimal-header-mobile-px: 16px;
+  --minimal-container-main-px-desktop: 144px;
+  --minimal-container-main-px-mobile: 16px;
+  --minimal-nav-vertical-w: 300px;
+  --minimal-nav-vertical-item-h: 44px;
+  --minimal-nav-vertical-sub-h: 36px;
+  --minimal-nav-vertical-active-indicator: 2px;
+  --minimal-nav-mini-w: 88px;
+  --minimal-nav-mini-item-w: 76px;
+  --minimal-nav-mini-item-h: 56px;
+  --minimal-nav-horizontal-h: 64px;
+  --minimal-nav-horizontal-item-h: 32px;
+
+  /* Icon defaults */
+  --minimal-icon-default: 24px;
+  --minimal-icon-sm: 20px;
+  --minimal-icon-md: 22px;
+  --minimal-icon-lg: 28px;
+  --minimal-icon-opacity-muted: 0.4;
+}
+
+/* ─── Dark mode override — DESIGN.md §dark mode parity ───────── */
+[data-color-scheme="dark"] {
+  --bg: #141a21;                      /* grey/900 */
+  --surface: #1c252e;                 /* grey/800 — paper */
+  --surface-warm: #28323d;
+  --fg: #ffffff;
+  --fg-2: #c4cdd5;                    /* grey/400 */
+  --muted: #919eab;                   /* grey/500 */
+  --meta: #637381;                    /* grey/600 */
+  --border: #919eab33;                /* unchanged — same alpha both modes */
+  --border-soft: #919eab1f;
+
+  /* Minimal-specific re-bindings */
+  --minimal-bg-default:     #141a21;
+  --minimal-bg-paper:       #1c252e;
+  --minimal-bg-paper-blur:  #1c252ee5;
+  --minimal-bg-neutral:     #28323d;
+  --minimal-text-primary:   #ffffff;
+  --minimal-text-secondary: #919eab;
+  --minimal-text-disabled:  #637381;
+
+  --minimal-filled-inherit-bg:    #ffffff;
+  --minimal-filled-inherit-fg:    #1c252e;
+  --minimal-filled-inherit-hover: #dfe3e8;
+
+  /* Shadow anchor reverts to common.black @ 16% in dark mode */
+  --minimal-shadow-color: #00000029;
+  --minimal-z1:  0 1px 2px 0 #00000029;
+  --minimal-z4:  0 4px 8px 0 #00000029;
+  --minimal-z8:  0 8px 16px 0 #00000029;
+  --minimal-z12: 0 12px 24px -4px #00000029;
+  --minimal-z16: 0 16px 32px -4px #00000029;
+  --minimal-z20: 0 20px 40px -4px #00000029;
+  --minimal-z24: 0 24px 48px 0 #00000029;
+  --minimal-shadow-card:
+    0 12px 24px -4px #00000029,
+    0 0 2px 0 #00000033;
+  --minimal-shadow-dropdown:
+    -20px 20px 40px -4px #0000003d,
+    0 0 2px 0 #0000003d;
+  --minimal-shadow-dialog:
+    -40px 40px 80px -8px #00000066;
+
+  /* swap/lighter-darker — soft surfaces invert toward `darker` so
+     soft chips remain legible on dark paper */
+  --minimal-primary-16:  #00a76f3d;
+  --minimal-success-16:  #22c55e3d;
+  --minimal-warning-16:  #ffab003d;
+  --minimal-error-16:    #ff56303d;
+  --minimal-info-16:     #00b8d93d;
+  --minimal-secondary-16:#8e33ff3d;
+}

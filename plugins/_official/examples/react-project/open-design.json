@@ -1,0 +1,193 @@
+{
+  "$schema": "https://open-design.ai/schemas/plugin.v1.json",
+  "specVersion": "1.0.0",
+  "name": "example-react-project",
+  "title": "React Project",
+  "title_i18n": {
+    "zh-CN": "React 项目",
+    "zh-TW": "React 專案",
+    "ja": "React プロジェクト",
+    "ko": "React 프로젝트",
+    "de": "React-Projekt",
+    "fr": "Projet React",
+    "ru": "React-проект",
+    "es": "Proyecto React",
+    "pt-BR": "Projeto React",
+    "it": "Progetto React",
+    "vi": "Dự án React",
+    "pl": "Projekt React",
+    "id": "Proyek React",
+    "nl": "React-project",
+    "ar": "مشروع React",
+    "tr": "React Projesi",
+    "uk": "React-проєкт",
+    "en": "React Project"
+  },
+  "version": "0.1.0",
+  "description": "Multi-file Vite + React + TypeScript project (not a single HTML file).\nGeneration writes a real project tree — package.json, vite.config.ts,\nindex.html, src/** — into the project root, styled by the active design\nsystem's tokens.css. Export as a ZIP, or install + build for a static\npreview.",
+  "description_i18n": {
+    "zh-CN": "多文件 Vite + React + TypeScript 项目（不是单个 HTML 文件）。生成时会把真实的项目结构（package.json、vite.config.ts、index.html、src/**）写入项目根目录，并由当前设计系统的 tokens.css 提供样式。可导出为 ZIP，或安装 + 构建后做静态预览。",
+    "zh-TW": "多檔案 Vite + React + TypeScript 專案（不是單一 HTML 檔案）。產生時會把真實的專案結構（package.json、vite.config.ts、index.html、src/**）寫入專案根目錄，並由目前設計系統的 tokens.css 提供樣式。可匯出為 ZIP，或安裝 + 建置後做靜態預覽。",
+    "ja": "複数ファイルの Vite + React + TypeScript プロジェクト（単一 HTML ではありません）。生成時に実際のプロジェクト構成（package.json、vite.config.ts、index.html、src/**）をプロジェクトルートへ書き出し、アクティブなデザインシステムの tokens.css でスタイリングします。ZIP でエクスポート、またはインストール + ビルドして静的プレビューできます。",
+    "ko": "여러 파일로 구성된 Vite + React + TypeScript 프로젝트(단일 HTML 파일이 아님). 생성 시 실제 프로젝트 트리(package.json, vite.config.ts, index.html, src/**)를 프로젝트 루트에 작성하고, 활성 디자인 시스템의 tokens.css로 스타일을 입힙니다. ZIP으로 내보내거나 설치 + 빌드해 정적 미리보기를 할 수 있습니다.",
+    "de": "Mehrdatei-Projekt mit Vite + React + TypeScript (keine einzelne HTML-Datei). Bei der Generierung wird ein echter Projektbaum (package.json, vite.config.ts, index.html, src/**) ins Projektstammverzeichnis geschrieben und mit der tokens.css des aktiven Designsystems gestaltet. Als ZIP exportieren oder installieren + bauen für eine statische Vorschau.",
+    "fr": "Projet multi-fichiers Vite + React + TypeScript (pas un fichier HTML unique). La génération écrit une véritable arborescence de projet (package.json, vite.config.ts, index.html, src/**) à la racine du projet, stylée par le tokens.css du système de design actif. Exportez en ZIP, ou installez + compilez pour un aperçu statique.",
+    "ru": "Многофайловый проект Vite + React + TypeScript (не один HTML-файл). При генерации в корень проекта пишется настоящее дерево проекта (package.json, vite.config.ts, index.html, src/**), оформленное через tokens.css активной дизайн-системы. Экспортируйте в ZIP или установите + соберите для статического предпросмотра.",
+    "es": "Proyecto multiarchivo Vite + React + TypeScript (no un único archivo HTML). La generación escribe un árbol de proyecto real (package.json, vite.config.ts, index.html, src/**) en la raíz del proyecto, con estilos del tokens.css del sistema de diseño activo. Expórtalo como ZIP, o instala + compila para una vista previa estática.",
+    "pt-BR": "Projeto multiarquivo Vite + React + TypeScript (não um único arquivo HTML). A geração escreve uma árvore de projeto real (package.json, vite.config.ts, index.html, src/**) na raiz do projeto, estilizada pelo tokens.css do design system ativo. Exporte como ZIP, ou instale + compile para uma prévia estática.",
+    "it": "Progetto multi-file Vite + React + TypeScript (non un singolo file HTML). La generazione scrive un vero albero di progetto (package.json, vite.config.ts, index.html, src/**) nella radice del progetto, con stile dal tokens.css del design system attivo. Esporta come ZIP, oppure installa + compila per un'anteprima statica.",
+    "vi": "Dự án nhiều tệp Vite + React + TypeScript (không phải một tệp HTML duy nhất). Khi tạo, một cây dự án thật (package.json, vite.config.ts, index.html, src/**) được ghi vào thư mục gốc dự án, lấy style từ tokens.css của design system đang dùng. Xuất ra ZIP, hoặc cài đặt + build để xem trước tĩnh.",
+    "pl": "Wieloplikowy projekt Vite + React + TypeScript (nie pojedynczy plik HTML). Generowanie zapisuje prawdziwą strukturę projektu (package.json, vite.config.ts, index.html, src/**) w katalogu głównym projektu, ostylowaną przez tokens.css aktywnego systemu projektowego. Eksportuj jako ZIP lub zainstaluj + zbuduj dla statycznego podglądu.",
+    "id": "Proyek multi-file Vite + React + TypeScript (bukan satu file HTML). Saat generasi, pohon proyek nyata (package.json, vite.config.ts, index.html, src/**) ditulis ke root proyek, ditata oleh tokens.css design system aktif. Ekspor sebagai ZIP, atau install + build untuk pratinjau statis.",
+    "nl": "Multi-bestand Vite + React + TypeScript-project (geen enkel HTML-bestand). Bij het genereren wordt een echte projectstructuur (package.json, vite.config.ts, index.html, src/**) naar de projectroot geschreven, gestyled door de tokens.css van het actieve designsysteem. Exporteer als ZIP, of installeer + build voor een statische preview.",
+    "ar": "مشروع متعدد الملفات بتقنية Vite + React + TypeScript (وليس ملف HTML واحدًا). يكتب التوليد شجرة مشروع حقيقية (package.json، vite.config.ts، index.html، src/**) في جذر المشروع، بتنسيق من tokens.css لنظام التصميم النشط. صدِّره كملف ZIP، أو ثبِّت + ابْنِ لمعاينة ثابتة.",
+    "tr": "Çok dosyalı Vite + React + TypeScript projesi (tek bir HTML dosyası değil). Üretim sırasında gerçek bir proje ağacı (package.json, vite.config.ts, index.html, src/**) proje köküne yazılır ve aktif tasarım sisteminin tokens.css'iyle biçimlendirilir. ZIP olarak dışa aktarın veya statik önizleme için kurun + derleyin.",
+    "uk": "Багатофайловий проєкт Vite + React + TypeScript (не один HTML-файл). Під час генерації в корінь проєкту записується справжнє дерево проєкту (package.json, vite.config.ts, index.html, src/**), оформлене через tokens.css активної дизайн-системи. Експортуйте як ZIP або встановіть + зберіть для статичного перегляду.",
+    "en": "Multi-file Vite + React + TypeScript project (not a single HTML file). Generation writes a real project tree — package.json, vite.config.ts, index.html, src/** — into the project root, styled by the active design system's tokens.css. Export as a ZIP, or install + build for a static preview."
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Open Design",
+    "url": "https://github.com/nexu-io"
+  },
+  "homepage": "https://github.com/nexu-io/open-design/tree/main/plugins/_official/examples/react-project",
+  "tags": [
+    "example",
+    "first-party",
+    "react",
+    "reactjs",
+    "vite",
+    "typescript",
+    "project",
+    "multi-file",
+    "frontend",
+    "scaffold"
+  ],
+  "compat": {
+    "agentSkills": [
+      {
+        "path": "./SKILL.md"
+      }
+    ]
+  },
+  "od": {
+    "kind": "scenario",
+    "taskKind": "new-generation",
+    "mode": "prototype",
+    "platform": "desktop",
+    "scenario": "design",
+    "surface": "web",
+    "preview": {
+      "type": "html",
+      "entry": "./example.html"
+    },
+    "useCase": {
+      "query": {
+        "en": "Create a multi-file React + TypeScript project for {{audience}} using the {{framework}} framework: a real {{artifactKind}} with a clean component split, typed props, and a production-ready structure. The project is auto-seeded before your first turn with the {{variant}} base — do NOT re-scaffold or copy a seed; read the existing files (package.json, src/**) and build the brief's real screens on top. Drive color/type/spacing from the active design system's tokens in `src/styles/tokens.css` without fighting the seed's existing theme. Styling approach: {{styling}}. Package manager: {{packageManager}}. Follow `references/structure.md` for the chosen framework; do NOT produce a single self-contained HTML file.",
+        "zh-CN": "为 {{audience}} 使用 {{framework}} 框架创建一个多文件 React + TypeScript 项目：一个真实的 {{artifactKind}}，组件拆分清晰、props 有类型、结构可用于生产。项目在你的第一轮之前已用 {{variant}} 基底自动生成种子——不要重新脚手架或复制种子，请读取已有文件（package.json、src/**）并在其上构建简报所需的真实页面。颜色/字体/间距从当前设计系统在 `src/styles/tokens.css` 中的 tokens 驱动，且不要与种子已有主题冲突。样式方式：{{styling}}。包管理器：{{packageManager}}。按所选框架遵循 `references/structure.md`；不要输出单个独立 HTML 文件。"
+      },
+      "exampleOutputs": [
+        {
+          "path": "./example.html",
+          "title": "React Project"
+        }
+      ]
+    },
+    "inputs": [
+      {
+        "name": "framework",
+        "label": "Framework",
+        "type": "select",
+        "required": true,
+        "options": ["Next.js", "Vite + React"],
+        "default": "Next.js"
+      },
+      {
+        "name": "artifactKind",
+        "label": "What are you building",
+        "type": "string",
+        "required": true,
+        "placeholder": "dashboard, landing page, settings screen",
+        "default": "React app"
+      },
+      {
+        "name": "audience",
+        "label": "Audience",
+        "type": "string",
+        "required": true,
+        "placeholder": "developers integrating an analytics SDK",
+        "default": "product users"
+      },
+      {
+        "name": "variant",
+        "label": "Design system",
+        "type": "select",
+        "required": true,
+        "options": ["Minimal (MUI theme)", "Plain (no UI library)"],
+        "default": "Minimal (MUI theme)"
+      },
+      {
+        "name": "styling",
+        "label": "Styling",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Agent decides",
+          "CSS Modules",
+          "Tailwind CSS",
+          "plain CSS"
+        ],
+        "default": "Agent decides"
+      },
+      {
+        "name": "packageManager",
+        "label": "Package manager",
+        "type": "select",
+        "required": true,
+        "options": ["npm", "pnpm", "yarn"],
+        "default": "npm"
+      }
+    ],
+    "context": {
+      "skills": [
+        {
+          "path": "./SKILL.md"
+        }
+      ],
+      "designSystem": {
+        "primary": true
+      },
+      "assets": [
+        "./SKILL.md",
+        "./references/structure.md",
+        "./references/checklist.md",
+        "./assets/scaffold/package.json",
+        "./assets/scaffold/.npmrc",
+        "./assets/scaffold/vite.config.ts",
+        "./assets/scaffold/tsconfig.json",
+        "./assets/scaffold/index.html",
+        "./assets/scaffold/src/main.tsx",
+        "./assets/scaffold/src/App.tsx",
+        "./assets/scaffold/src/styles/tokens.css",
+        "./assets/scaffold/src/styles/global.css",
+        "./assets/scaffold-next/package.json",
+        "./assets/scaffold-next/.npmrc",
+        "./assets/scaffold-next/next.config.ts",
+        "./assets/scaffold-next/tsconfig.json",
+        "./assets/scaffold-next/src/app/layout.tsx",
+        "./assets/scaffold-next/src/app/page.tsx",
+        "./assets/scaffold-next/src/app/tokens.css",
+        "./assets/scaffold-next/src/app/globals.css"
+      ]
+    },
+    "pipeline": {
+      "stages": [
+        {
+          "id": "generate",
+          "atoms": ["file-write"]
+        }
+      ]
+    },
+    "capabilities": ["prompt:inject", "fs:write"]
+  }
+}
