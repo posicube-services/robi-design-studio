@@ -2687,6 +2687,8 @@ export const uk: Dict = {
   'fileViewer.audioMeta': 'Аудіо · {size}',
   'fileViewer.reload': 'Перезавантажити',
   'fileViewer.reloadDisk': 'Перезавантажити з диска',
+  'fileViewer.openInEditor': 'Відкрити в редакторі',
+  'fileViewer.chooseEditor': 'Вибрати редактор',
   'fileViewer.copy': 'Копіювати',
   'fileViewer.copyTitle': 'Копіювати вміст файлу',
   'fileViewer.saveDisabled': 'Зберегти (переглядач лише для читання)',

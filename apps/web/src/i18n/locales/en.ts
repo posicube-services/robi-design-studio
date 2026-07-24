@@ -2701,6 +2701,8 @@ export const en: Dict = {
   'fileViewer.audioMeta': 'Audio · {size}',
   'fileViewer.reload': 'Reload',
   'fileViewer.reloadDisk': 'Reload from disk',
+  'fileViewer.openInEditor': 'Open in editor',
+  'fileViewer.chooseEditor': 'Choose editor',
   'fileViewer.copy': 'Copy',
   'fileViewer.copyTitle': 'Copy file contents',
   'fileViewer.saveDisabled': 'Save (read-only viewer)',

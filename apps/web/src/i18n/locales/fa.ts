@@ -2687,6 +2687,8 @@ export const fa: Dict = {
   'fileViewer.audioMeta': 'صدا · {size}',
   'fileViewer.reload': 'بارگذاری مجدد',
   'fileViewer.reloadDisk': 'بارگذاری مجدد از دیسک',
+  'fileViewer.openInEditor': 'باز کردن در ویرایشگر',
+  'fileViewer.chooseEditor': 'انتخاب ویرایشگر',
   'fileViewer.copy': 'کپی',
   'fileViewer.copyTitle': 'کپی محتوای فایل',
   'fileViewer.saveDisabled': 'ذخیره (نمایشگر فقط خواندنی)',

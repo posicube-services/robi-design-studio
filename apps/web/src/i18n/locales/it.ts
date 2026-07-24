@@ -2687,6 +2687,8 @@ export const it: Dict = {
   'fileViewer.audioMeta': 'Audio · {size}',
   'fileViewer.reload': 'Ricarica',
   'fileViewer.reloadDisk': 'Ricarica dal disco',
+  'fileViewer.openInEditor': "Apri nell'editor",
+  'fileViewer.chooseEditor': 'Scegli editor',
   'fileViewer.copy': 'Copia',
   'fileViewer.copyTitle': 'Copia contenuto del file',
   'fileViewer.saveDisabled': 'Salva (visualizzatore in sola lettura)',

@@ -3480,6 +3480,8 @@ export interface Dict {
   'fileViewer.audioMeta': string;
   'fileViewer.reload': string;
   'fileViewer.reloadDisk': string;
+  'fileViewer.openInEditor': string;
+  'fileViewer.chooseEditor': string;
   'fileViewer.copy': string;
   'fileViewer.copyTitle': string;
   'fileViewer.saveDisabled': string;

@@ -2687,6 +2687,8 @@ export const ko: Dict = {
   'fileViewer.audioMeta': '오디오 · {size}',
   'fileViewer.reload': '새로고침',
   'fileViewer.reloadDisk': '디스크에서 새로고침',
+  'fileViewer.openInEditor': '에디터로 열기',
+  'fileViewer.chooseEditor': '에디터 선택',
   'fileViewer.copy': '복사',
   'fileViewer.copyTitle': '파일 내용 복사',
   'fileViewer.saveDisabled': '저장 (읽기 전용)',

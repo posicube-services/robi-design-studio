@@ -2687,6 +2687,8 @@ export const tr: Dict = {
   'fileViewer.audioMeta': 'Ses · {size}',
   'fileViewer.reload': 'Yeniden yükle',
   'fileViewer.reloadDisk': 'Diskten yeniden yükle',
+  'fileViewer.openInEditor': 'Düzenleyicide aç',
+  'fileViewer.chooseEditor': 'Düzenleyici seç',
   'fileViewer.copy': 'Kopyala',
   'fileViewer.copyTitle': 'Dosya içeriklerini kopyala',
   'fileViewer.saveDisabled': 'Kaydet (salt-okunur görüntüleyici)',

@@ -2687,6 +2687,8 @@ export const id: Dict = {
   'fileViewer.audioMeta': 'Audio - {size}',
   'fileViewer.reload': 'Muat ulang',
   'fileViewer.reloadDisk': 'Muat ulang dari disk',
+  'fileViewer.openInEditor': 'Buka di editor',
+  'fileViewer.chooseEditor': 'Pilih editor',
   'fileViewer.copy': 'Salin',
   'fileViewer.copyTitle': 'Salin konten',
   'fileViewer.saveDisabled': 'Tidak ada perubahan untuk disimpan',

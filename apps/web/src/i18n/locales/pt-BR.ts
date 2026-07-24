@@ -2687,6 +2687,8 @@ export const ptBR: Dict = {
   'fileViewer.audioMeta': 'Áudio · {size}',
   'fileViewer.reload': 'Recarregar',
   'fileViewer.reloadDisk': 'Recarregar do disco',
+  'fileViewer.openInEditor': 'Abrir no editor',
+  'fileViewer.chooseEditor': 'Escolher editor',
   'fileViewer.copy': 'Copiar',
   'fileViewer.copyTitle': 'Copiar conteúdo do arquivo',
   'fileViewer.saveDisabled': 'Salvar (visualizador somente leitura)',

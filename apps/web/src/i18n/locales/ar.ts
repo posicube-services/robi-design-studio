@@ -2687,6 +2687,8 @@ export const ar: Dict = {
   'fileViewer.audioMeta': 'صوت · {size}',
   'fileViewer.reload': 'إعادة تحميل',
   'fileViewer.reloadDisk': 'إعادة تحميل من القرص',
+  'fileViewer.openInEditor': 'فتح في المحرر',
+  'fileViewer.chooseEditor': 'اختيار المحرر',
   'fileViewer.copy': 'نسخ',
   'fileViewer.copyTitle': 'نسخ محتويات الملف',
   'fileViewer.saveDisabled': 'حفظ (عارض للقراءة فقط)',

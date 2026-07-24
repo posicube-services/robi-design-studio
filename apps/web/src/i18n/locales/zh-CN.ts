@@ -2933,6 +2933,8 @@ export const zhCN: Dict = {
   "fileViewer.audioMeta": "音频 · {size}",
   "fileViewer.reload": "重新加载",
   "fileViewer.reloadDisk": "从磁盘重新加载",
+  "fileViewer.openInEditor": "在编辑器中打开",
+  "fileViewer.chooseEditor": "选择编辑器",
   "fileViewer.copy": "复制",
   "fileViewer.copyTitle": "复制文件内容",
   "fileViewer.saveDisabled": "保存（只读预览）",

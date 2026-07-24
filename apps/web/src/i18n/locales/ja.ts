@@ -2687,6 +2687,8 @@ export const ja: Dict = {
   'fileViewer.audioMeta': '音声 · {size}',
   'fileViewer.reload': '再読み込み',
   'fileViewer.reloadDisk': 'ディスクから再読み込み',
+  'fileViewer.openInEditor': 'エディタで開く',
+  'fileViewer.chooseEditor': 'エディタを選択',
   'fileViewer.copy': 'コピー',
   'fileViewer.copyTitle': 'ファイルの内容をコピー',
   'fileViewer.saveDisabled': '保存（読み取り専用ビューアー）',

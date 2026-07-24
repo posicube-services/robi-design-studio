@@ -176,7 +176,8 @@ export function buildGenerationPreviewState(input: {
   const startedAt = latestAssistant.startedAt ?? latestAssistant.createdAt ?? Date.now();
 
   const errorCode = failed ? latestErrorEventCode(events) : null;
-  const failureUi = failed ? resolveRunFailureUi(errorCode, latestAssistant.agentId) : null;
+  const errorDetail = failed ? latestErrorEventDetail(events) : null;
+  const failureUi = failed ? resolveRunFailureUi(errorCode, errorDetail, latestAssistant.agentId) : null;
   // Promote AMR for auth/quota failures only; an upstream outage can hit the
   // hosted gateway too, so switching would not be a real fix there.
   const promoteAmrSwitch =
@@ -356,6 +357,19 @@ function latestErrorEventCode(events: AgentEvent[]): string | null {
     const event = events[index]!;
     if (event.kind === 'status' && event.label === 'error') {
       return event.code ?? null;
+    }
+  }
+  return null;
+}
+
+// Mirrors latestErrorEventCode but pulls the daemon's finer failureDetail
+// classification off the same status event, so this surface can resolve the
+// same named failure type + fix as the chat error card (see resolveRunFailureUi).
+function latestErrorEventDetail(events: AgentEvent[]): string | null {
+  for (let index = events.length - 1; index >= 0; index -= 1) {
+    const event = events[index]!;
+    if (event.kind === 'status' && event.label === 'error') {
+      return event.failureDetail ?? null;
     }
   }
   return null;

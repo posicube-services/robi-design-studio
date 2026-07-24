@@ -2687,6 +2687,8 @@ export const th: Dict = {
   'fileViewer.audioMeta': 'คลิปเสียง · {size}',
   'fileViewer.reload': 'โหลดทับ',
   'fileViewer.reloadDisk': 'ดึงโหลดจากแหล่งล่าสุด',
+  'fileViewer.openInEditor': 'เปิดในตัวแก้ไข',
+  'fileViewer.chooseEditor': 'เลือกตัวแก้ไข',
   'fileViewer.copy': 'ก็อปปี้',
   'fileViewer.copyTitle': 'คัดลอกแบบจัดเต็ม',
   'fileViewer.saveDisabled': 'ปุ่มเซฟ (ตอนนี้อ่านได้เท่านั้น)',

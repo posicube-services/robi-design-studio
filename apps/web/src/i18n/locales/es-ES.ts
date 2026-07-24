@@ -2687,6 +2687,8 @@ export const esES: Dict = {
   'fileViewer.audioMeta': 'Audio · {size}',
   'fileViewer.reload': 'Recargar',
   'fileViewer.reloadDisk': 'Recargar desde el disco',
+  'fileViewer.openInEditor': 'Abrir en el editor',
+  'fileViewer.chooseEditor': 'Elegir editor',
   'fileViewer.copy': 'Copiar',
   'fileViewer.copyTitle': 'Copiar el contenido del archivo',
   'fileViewer.saveDisabled': 'Guardar (visor de solo lectura)',

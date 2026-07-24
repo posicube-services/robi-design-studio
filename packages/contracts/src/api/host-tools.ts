@@ -50,6 +50,13 @@ export interface HostEditorsResponse {
 
 export interface OpenProjectInEditorRequest {
   editorId: HostEditorId;
+  /**
+   * Optional project-root-relative path to open instead of the project
+   * folder itself (e.g. from a file viewer's "open in editor" action). The
+   * daemon confines resolution to the project directory and rejects a path
+   * that would escape it.
+   */
+  relPath?: string;
 }
 
 export interface OpenProjectInEditorResponse {

@@ -2942,6 +2942,8 @@ export const zhTW: Dict = {
   "fileViewer.audioMeta": "音訊 · {size}",
   "fileViewer.reload": "重新載入",
   "fileViewer.reloadDisk": "從磁碟重新載入",
+  "fileViewer.openInEditor": "在編輯器中開啟",
+  "fileViewer.chooseEditor": "選擇編輯器",
   "fileViewer.copy": "複製",
   "fileViewer.copyTitle": "複製檔案內容",
   "fileViewer.saveDisabled": "儲存（唯讀預覽）",

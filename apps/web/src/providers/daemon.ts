@@ -26,6 +26,15 @@ import type {
   AmrWalletSnapshot,
   ByokChatProviderConfig,
   MediaExecutionPolicy,
+  ReactBuildCancelResponse,
+  ReactBuildStartRequest,
+  ReactBuildStartResponse,
+  ReactBuildState,
+  ReactBuildStatusResponse,
+  ReactDevStartResponse,
+  ReactDevState,
+  ReactDevStatusResponse,
+  ReactDevStopResponse,
   ResearchOptions,
   RunContextSelection,
   SseErrorPayload,
@@ -969,6 +978,111 @@ export async function velaLogout(): Promise<{ ok: boolean }> {
     return { ok: resp.ok };
   } catch {
     return { ok: false };
+  }
+}
+
+// React-project build (Milestone B). All three hit
+// `/api/projects/:id/react/build`; the daemon runs install + vite build in an
+// in-memory job and the panel polls `fetchReactBuildState` for progress.
+export async function startReactBuild(
+  projectId: string,
+  body?: ReactBuildStartRequest,
+): Promise<ReactBuildState | null> {
+  try {
+    const resp = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/react/build`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body ?? {}),
+      },
+    );
+    if (!resp.ok) return null;
+    return ((await resp.json()) as ReactBuildStartResponse).state;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchReactBuildState(
+  projectId: string,
+): Promise<ReactBuildState | null> {
+  try {
+    const resp = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/react/build`,
+      { cache: 'no-store' },
+    );
+    if (!resp.ok) return null;
+    return ((await resp.json()) as ReactBuildStatusResponse).state;
+  } catch {
+    return null;
+  }
+}
+
+export async function cancelReactBuild(
+  projectId: string,
+): Promise<ReactBuildState | null> {
+  try {
+    const resp = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/react/build/cancel`,
+      { method: 'POST' },
+    );
+    if (!resp.ok) return null;
+    return ((await resp.json()) as ReactBuildCancelResponse).state;
+  } catch {
+    return null;
+  }
+}
+
+// Static build output served by the daemon (relative ./assets resolve against
+// this route). The preview iframe loads this in Build mode.
+export function reactDistUrl(projectId: string): string {
+  return `/api/projects/${encodeURIComponent(projectId)}/react/dist/index.html`;
+}
+
+// React-project dev server (Milestone C — live HMR preview).
+export async function startReactDev(
+  projectId: string,
+): Promise<ReactDevState | null> {
+  try {
+    const resp = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/react/dev`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+    );
+    if (!resp.ok) return null;
+    return ((await resp.json()) as ReactDevStartResponse).state;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchReactDevState(
+  projectId: string,
+): Promise<ReactDevState | null> {
+  try {
+    const resp = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/react/dev`,
+      { cache: 'no-store' },
+    );
+    if (!resp.ok) return null;
+    return ((await resp.json()) as ReactDevStatusResponse).state;
+  } catch {
+    return null;
+  }
+}
+
+export async function stopReactDev(
+  projectId: string,
+): Promise<ReactDevState | null> {
+  try {
+    const resp = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/react/dev/stop`,
+      { method: 'POST' },
+    );
+    if (!resp.ok) return null;
+    return ((await resp.json()) as ReactDevStopResponse).state;
+  } catch {
+    return null;
   }
 }
 

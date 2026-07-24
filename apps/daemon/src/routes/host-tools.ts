@@ -349,7 +349,18 @@ export function registerHostToolsRoutes(app: Express, ctx: RegisterHostToolsRout
         project,
         resolveProjectDir,
       );
-      const launchPlan = await resolveHostToolLaunchPlan(editorId, resolvedDir);
+      // Optional: open a specific file instead of the project folder. Confine
+      // to the project dir so a crafted relPath can't escape the sandbox.
+      let target = resolvedDir;
+      const relPath = typeof req.body?.relPath === 'string' ? req.body.relPath.trim() : '';
+      if (relPath) {
+        const candidate = path.resolve(resolvedDir, relPath);
+        if (candidate !== resolvedDir && !candidate.startsWith(resolvedDir + path.sep)) {
+          return sendApiError(res, 400, 'BAD_REQUEST', 'relPath escapes project');
+        }
+        target = candidate;
+      }
+      const launchPlan = await resolveHostToolLaunchPlan(editorId, target);
       if (!launchPlan.available || !launchPlan.command || !launchPlan.args) {
         return sendApiError(res, 409, 'EDITOR_NOT_AVAILABLE', `${entry.label} is not installed`);
       }
@@ -370,7 +381,7 @@ export function registerHostToolsRoutes(app: Express, ctx: RegisterHostToolsRout
       const body: OpenProjectInEditorResponse = {
         ok: true,
         editorId,
-        path: resolvedDir,
+        path: target,
       };
       res.json(body);
     } catch (err) {

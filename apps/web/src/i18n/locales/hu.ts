@@ -2687,6 +2687,8 @@ export const hu: Dict = {
   'fileViewer.audioMeta': 'Hang · {size}',
   'fileViewer.reload': 'Újratöltés',
   'fileViewer.reloadDisk': 'Újratöltés lemezről',
+  'fileViewer.openInEditor': 'Megnyitás szerkesztőben',
+  'fileViewer.chooseEditor': 'Szerkesztő kiválasztása',
   'fileViewer.copy': 'Másolás',
   'fileViewer.copyTitle': 'Fájltartalom másolása',
   'fileViewer.saveDisabled': 'Mentés (csak olvasható nézet)',
