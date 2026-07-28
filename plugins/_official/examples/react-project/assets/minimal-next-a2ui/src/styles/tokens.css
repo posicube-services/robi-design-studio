@@ -1,0 +1,11 @@
+/**
+ * Open Design design-system tokens.
+ *
+ * This block is additive and intentionally neutral: it does NOT override the
+ * MUI theme. The Open Design design system pastes its :root token block here
+ * after the seed is generated. Keep declarations scoped to custom properties
+ * so they never fight the MUI cascade.
+ */
+:root {
+  /* Open Design tokens get injected below this line. */
+}

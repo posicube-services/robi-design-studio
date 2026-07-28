@@ -99,7 +99,10 @@
         "label": "Framework",
         "type": "select",
         "required": true,
-        "options": ["Next.js", "Vite + React"],
+        "options": [
+          "Next.js",
+          "Vite + React"
+        ],
         "default": "Next.js"
       },
       {
@@ -123,7 +126,11 @@
         "label": "Design system",
         "type": "select",
         "required": true,
-        "options": ["Minimal (MUI theme)", "Plain (no UI library)"],
+        "options": [
+          "A2UI (spec-driven, Next.js only)",
+          "Minimal (MUI theme)",
+          "Plain (no UI library)"
+        ],
         "default": "Minimal (MUI theme)"
       },
       {
@@ -144,7 +151,11 @@
         "label": "Package manager",
         "type": "select",
         "required": true,
-        "options": ["npm", "pnpm", "yarn"],
+        "options": [
+          "npm",
+          "pnpm",
+          "yarn"
+        ],
         "default": "npm"
       }
     ],
@@ -184,10 +195,15 @@
       "stages": [
         {
           "id": "generate",
-          "atoms": ["file-write"]
+          "atoms": [
+            "file-write"
+          ]
         }
       ]
     },
-    "capabilities": ["prompt:inject", "fs:write"]
+    "capabilities": [
+      "prompt:inject",
+      "fs:write"
+    ]
   }
 }

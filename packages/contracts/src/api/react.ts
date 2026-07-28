@@ -140,7 +140,16 @@ export type ReactScaffoldFramework = 'vite' | 'next';
 // `minimal` = curated MUI minimal design system seed (default for new
 // react-projects, so generated UI is consistent). `plain` = the lightweight
 // starter seed.
-export type ReactScaffoldVariant = 'minimal' | 'plain';
+/**
+ * Seed flavour, ordered by how hard the design is enforced:
+ * - `plain`   — no component library; the active design system's tokens.css
+ *               styles whatever the agent writes.
+ * - `minimal` — the MUI Minimal component library; free-form composition.
+ * - `a2ui`    — MUI Minimal plus the A2UI spec renderer and Zod gate, so the
+ *               agent composes a validated spec from a fixed catalog instead
+ *               of writing JSX. Next.js only; vite degrades to `minimal`.
+ */
+export type ReactScaffoldVariant = 'minimal' | 'plain' | 'a2ui';
 
 export interface ReactScaffoldRequest {
   framework: ReactScaffoldFramework;

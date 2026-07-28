@@ -566,7 +566,11 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
       const fwRaw = inputs && typeof inputs.framework === 'string' ? inputs.framework : '';
       const framework = /next/i.test(fwRaw) ? 'next' : 'vite';
       const variantRaw = inputs && typeof inputs.variant === 'string' ? inputs.variant : '';
-      const variant = /plain/i.test(variantRaw) ? 'plain' : 'minimal';
+      const variant = /a2ui/i.test(variantRaw)
+        ? 'a2ui'
+        : /plain/i.test(variantRaw)
+          ? 'plain'
+          : 'minimal';
       const baseDir =
         typeof metadata?.baseDir === 'string' ? path.normalize(metadata.baseDir) : null;
       const dir =

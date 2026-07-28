@@ -26,6 +26,11 @@ function seedDirName(
   framework: ReactScaffoldFramework,
   variant: ReactScaffoldVariant,
 ): string {
+  // a2ui carries the spec renderer + Zod gate, which is a Next app; there is
+  // no Vite twin, so a vite request degrades to plain `minimal` below.
+  if (variant === 'a2ui') {
+    return framework === 'next' ? 'minimal-next-a2ui' : 'minimal-vite';
+  }
   if (variant === 'minimal') {
     return framework === 'next' ? 'minimal-next' : 'minimal-vite';
   }
@@ -46,7 +51,14 @@ export function resolveReactSeedDir(
 ): { dir: string; variant: ReactScaffoldVariant } | null {
   const primary = path.join(pluginAssetsRoot, seedDirName(framework, variant));
   if (existsSync(primary)) return { dir: primary, variant };
-  if (variant === 'minimal') {
+  // a2ui on vite (or a missing a2ui seed) lands on the MUI Minimal starter:
+  // same design system, no spec gate. Report `minimal` so the caller sees the
+  // variant it actually got rather than the one it asked for.
+  if (variant === 'a2ui') {
+    const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'minimal'));
+    if (existsSync(fallback)) return { dir: fallback, variant: 'minimal' };
+  }
+  if (variant === 'minimal' || variant === 'a2ui') {
     const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'plain'));
     if (existsSync(fallback)) return { dir: fallback, variant: 'plain' };
   }
