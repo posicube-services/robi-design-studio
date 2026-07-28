@@ -80,6 +80,8 @@ export function projectKindToTracking(
       return 'audio';
     case 'brand':
       return 'brand';
+    case 'react-project':
+      return 'react_project';
     case 'live-artifact':
     case 'live_artifact':
       return 'live_artifact';

@@ -106,6 +106,7 @@ import {
 } from '@open-design/contracts';
 import { createTerminal, killTerminal, listPlugins } from '../state/projects';
 import { DesignFilesPanel, type DesignFilesNavState } from './DesignFilesPanel';
+import { ReactBuildPanel } from './ReactBuildPanel';
 import {
   DesignBrowserPanel,
   labelFromUrl,
@@ -3862,6 +3863,14 @@ export function FileWorkspace({
             liveArtifactEvents={liveArtifactEvents}
             onRefreshArtifacts={onRefreshFiles}
           />
+        ) : projectKind === 'react_project'
+          && (!activeFile
+            || /\.html?$/i.test(activeFile.name)
+            || activeFile.name.startsWith('dist/')) ? (
+          // react-project: the deliverable is a running app, not a file, so the
+          // main viewer IS the live/build preview and it carries its own
+          // dev/build status. Source files still open in FileViewer below.
+          <ReactBuildPanel projectId={projectId} />
         ) : activeFile ? (
           <FileViewer
             projectId={projectId}

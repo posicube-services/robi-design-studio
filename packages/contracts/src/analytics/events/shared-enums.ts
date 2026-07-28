@@ -43,6 +43,10 @@ export type TrackingProjectKind =
   // The dashboard reads it on run_created / run_finished to split the
   // DS generation funnel from regular artifact runs.
   | 'design_system'
+  // Multi-file Vite/Next + React project runs (product `metadata.kind ===
+  // 'react-project'`). Splits the React-project generation funnel from
+  // single-HTML artifact runs, whose cost/latency profile differs sharply.
+  | 'react_project'
   | 'other';
 
 // Where a project originated. Matches CSV row 9 / row 17 enum.
