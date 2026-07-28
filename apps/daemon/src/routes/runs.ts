@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import type Database from 'better-sqlite3';
 import fs from 'node:fs';
+import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import {
   defaultScenarioPluginIdForProjectMetadata,
@@ -60,6 +61,7 @@ import {
   resolveProjectDir,
   SandboxImportedProjectError,
 } from '../projects.js';
+import { materializeReactScaffold } from '../react-scaffold.js';
 import {
   amrUserIdForRunAnalytics,
   agentProviderIdForRunAnalytics,
@@ -536,6 +538,64 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
     }
   }
 
+  // react-project runs are generated on top of a bundled seed too large for an
+  // agent to copy by hand (~150 files for the MUI minimal variant). Before the
+  // agent's first turn, copy the seed for the selected framework into the
+  // project dir. The materializer skips when the project already has a
+  // package.json, so only the project's FIRST run seeds it — later runs and
+  // re-opens are no-ops, never clobbering the agent's edits. Failures are
+  // logged but never block run creation.
+  async function maybeMaterializeReactProjectSeed({
+    projectId,
+    metadata,
+    pluginId,
+    inputs,
+  }: {
+    projectId: string | undefined;
+    metadata: ProjectMetadata;
+    pluginId: string | undefined;
+    inputs: Record<string, unknown> | null | undefined;
+  }): Promise<void> {
+    try {
+      const isReact =
+        pluginId === 'example-react-project' || metadata?.kind === 'react-project';
+      if (!isReact) return;
+      if (typeof projectId !== 'string' || !projectId) return;
+      const plugin = getInstalledPlugin(db, 'example-react-project');
+      if (!plugin?.fsPath) return;
+      const fwRaw = inputs && typeof inputs.framework === 'string' ? inputs.framework : '';
+      const framework = /next/i.test(fwRaw) ? 'next' : 'vite';
+      const variantRaw = inputs && typeof inputs.variant === 'string' ? inputs.variant : '';
+      const variant = /plain/i.test(variantRaw) ? 'plain' : 'minimal';
+      const baseDir =
+        typeof metadata?.baseDir === 'string' ? path.normalize(metadata.baseDir) : null;
+      const dir =
+        baseDir && path.isAbsolute(baseDir)
+          ? baseDir
+          : resolveProjectDir(PROJECTS_DIR, projectId, metadata, {
+              allowUnavailableSandboxImportedProject: true,
+            });
+      const state = await materializeReactScaffold({
+        projectId,
+        projectDir: dir,
+        pluginAssetsRoot: path.join(plugin.fsPath, 'assets'),
+        framework,
+        variant,
+      });
+      if (state.error) {
+        console.warn(`[react] scaffold materialize failed for ${projectId}: ${state.error}`);
+      } else if (!state.skipped) {
+        console.log(
+          `[react] materialized ${state.filesWritten} ${state.framework}/${state.variant} seed files for ${projectId}`,
+        );
+      }
+    } catch (err) {
+      console.warn(
+        `[react] scaffold materialize threw for ${projectId}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  }
+
   app.post('/api/runs', async (req: ApiRequest, res: ApiResponse) => {
     if (ctx.lifecycle.isDaemonShuttingDown()) {
       return sendApiError(res, 503, 'UPSTREAM_UNAVAILABLE', 'daemon is shutting down');
@@ -632,6 +692,14 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
         throw err;
       }
     }
+    // Seed react-project runs before the agent starts (idempotent, first-run
+    // only). Awaited so the seed files exist when the agent's first turn runs.
+    await maybeMaterializeReactProjectSeed({
+      projectId: meta.projectId,
+      metadata: runProject?.metadata,
+      pluginId: meta.pluginId,
+      inputs: resolvedSnapshot?.ok ? resolvedSnapshot.snapshot.inputs : null,
+    });
     if (typeof meta.agentId !== 'string' || !meta.agentId) {
       try {
         const appCfg = await readAppConfig(RUNTIME_DATA_DIR);
