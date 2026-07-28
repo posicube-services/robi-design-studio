@@ -39,10 +39,16 @@ The value of this fork is that it stays mergeable. As of the re-base:
 
 | Metric | Value |
 | --- | --- |
-| Files added (ours) | ~830 |
-| Upstream files **modified** | 10 |
-| Lines in those modifications | **+226 / −2** |
+| Files added (ours) | 1,211 |
+| Upstream files **modified** | 12 |
+| Lines in those modifications | **+257 / −2** |
 | Upstream files **deleted** | 0 |
+
+Measured 2026-07-28 with `git diff --numstat --diff-filter=M
+a7e205939..posicube-main`. Measure against **the upstream commit actually
+merged**, not `upstream/main` — that ref moves, and diffing a newer
+`upstream/main` makes upstream's own later edits look like deletions on our
+side.
 
 Every modification is an *insertion at an existing extension point* — a union
 member, a switch case, one route registration, one JSX branch, a brand-token
@@ -66,6 +72,8 @@ prefer adding a new file over reshaping an existing one.
 | `packages/contracts/src/analytics/events/shared-enums.ts` | `TrackingProjectKind` gains `'react_project'` |
 | `packages/contracts/src/analytics/events/mappers.ts` | map product kind → analytics kind |
 | `packages/contracts/src/design-systems/token-schema.ts` | register `mui-minimal`'s tokens with upstream's token guard |
+| `CLAUDE.md` | append the pointer to `docs/posicube/` (upstream's content untouched above it) |
+| `.gitignore` | ignore `.omc/` and `.serena/` agent scratch; appended in a trailing posicube block so upstream's future appends land above ours |
 
 ## What we added
 
@@ -73,7 +81,7 @@ prefer adding a new file over reshaping an existing one.
 | --- | --- |
 | react-project pipeline | `apps/daemon/src/react-{scaffold,build,dev,framework,build-routes}.ts` — scaffold a real project tree, run its dev server, run its build |
 | Seeds | `plugins/_official/examples/react-project/assets/{minimal-next,minimal-next-a2ui,minimal-vite,scaffold,scaffold-next}` |
-| A2UI core | inside the `minimal-next-a2ui` seed: `src/genui/` (schema, renderer, registry), `src/blocks/` (31 blocks), `src/authoring/` (Zod gate + catalog), the `/a2ui` route, `a2ui-spec.json` |
+| A2UI core | inside the `minimal-next-a2ui` seed: `src/genui/` (schema, renderer, registry), `src/blocks/` (30 blocks + the `unknown-node` fallback), `src/authoring/` (Zod gate + catalog), the `/a2ui` route, `a2ui-spec.json` |
 | Authoring skill | `design-templates/a2ui-spec/SKILL.md` |
 | Design system | `design-systems/mui-minimal/` |
 | Web UI | `apps/web/src/components/ReactBuildPanel.tsx` |

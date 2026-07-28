@@ -111,7 +111,7 @@ Inside the `minimal-next-a2ui` seed, so it ships with the generated project:
 | `src/genui/schema.ts` | the spec shape — a flat adjacency list `{version, root, nodes[]}` |
 | `src/genui/renderer.tsx` | walks the spec; an unknown node type renders a visible diagnostic rather than crashing |
 | `src/genui/registry.tsx` | **the design-consistency boundary** — the map from node `type` to a curated block |
-| `src/blocks/*.tsx` | 31 blocks: 17 pattern (Page, DataTable, Form, StatCard…) + 13 primitive (Stack, Grid, Typography…) |
+| `src/blocks/*.tsx` | 30 blocks: 17 pattern (Page, DataTable, Form, StatCard…) + 13 primitive (Stack, Grid, Typography…). The directory holds 31 `.tsx` files — the 31st, `unknown-node.tsx`, is the diagnostic fallback the renderer reaches for when a type is *not* a block, so it is not part of the catalog. The gate's type enum, the registry, and this count all agree at 30. |
 | `src/authoring/spec-schema.ts` | the Zod gate |
 | `src/authoring/catalog.ts` | the vocabulary the LLM is shown |
 | `src/app/a2ui/page.tsx` | reads `a2ui-spec.json` (force-dynamic) and renders it |
