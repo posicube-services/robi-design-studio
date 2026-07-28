@@ -101,3 +101,10 @@ deploy/agent-bins/
 
 # Looper harness attachments (bug screenshots etc.) — agent scratch, not repo content
 .looper-attachments/
+
+# Agent tooling scratch — oh-my-claudecode state/sessions and Serena project
+# memories. Local per-developer context, never repo content. (The old
+# fe-open-design-minimal-theme snapshot committed `.omc/state/sessions/`,
+# which the root AGENTS.md forbids — see docs/posicube/fork-maintenance.md.)
+.omc/
+.serena/
