@@ -300,6 +300,7 @@ import { createDesignSystemGenerationJobStore } from './design-systems/generatio
 import { createDesignSystemServerServices } from './design-systems/server-services.js';
 import { prepareDesignTokenContractRebuild } from './design-systems/token-contract-rebuild.js';
 import { registerBrandRoutes } from './brand-routes.js';
+import { registerReactBuildRoutes } from './react-build-routes.js';
 import {
   applyDiffReviewDecisionToCwd,
   applyPlugin,
@@ -3126,6 +3127,13 @@ export async function startServer({
       updateUserDesignSystemRevisionStatus,
     },
     generationJobs: designSystemGenerationJobs,
+  });
+  registerReactBuildRoutes(app, {
+    db,
+    http: httpDeps,
+    paths: pathDeps,
+    projectStore: projectStoreDeps,
+    projectFiles: projectFileDeps,
   });
   registerBrandRoutes(app, {
     brandsRoot: BRANDS_DIR,

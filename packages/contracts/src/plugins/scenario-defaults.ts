@@ -47,7 +47,8 @@ export type DefaultScenarioPluginId =
   | 'example-live-artifact'
   | 'example-simple-deck'
   | 'example-web-clone'
-  | 'example-web-prototype';
+  | 'example-web-prototype'
+  | 'example-react-project';
 
 export const DEFAULT_UNSELECTED_SCENARIO_PLUGIN_ID =
   'od-default' satisfies DefaultScenarioPluginId;
@@ -67,6 +68,10 @@ export const DEFAULT_SCENARIO_PLUGIN_BY_KIND: Record<ProjectKind, DefaultScenari
   video:     'od-media-generation',
   audio:     'od-media-generation',
   other:     'od-new-generation',
+  // React projects bind to the bundled example-react-project scenario,
+  // which materializes a Vite/Next scaffold (see react-scaffold.ts) instead
+  // of routing through the generic HTML-emitting od-new-generation pipeline.
+  'react-project': 'example-react-project',
 };
 
 export const DEFAULT_SCENARIO_PLUGIN_BY_TASK_KIND: Record<TaskKind, DefaultScenarioPluginId> = {

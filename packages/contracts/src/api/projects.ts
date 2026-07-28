@@ -14,7 +14,8 @@ export type ProjectKind =
   | 'brand'
   | 'image'
   | 'video'
-  | 'audio';
+  | 'audio'
+  | 'react-project';
 
 export type MediaAspect = '1:1' | '16:9' | '9:16' | '4:3' | '3:4';
 
