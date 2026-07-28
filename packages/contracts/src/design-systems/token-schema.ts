@@ -212,6 +212,13 @@ export const BRAND_EXTENSIONS: Readonly<Record<string, readonly string[]>> = {
   default: [
     "--space-20", // 80px — used as section-y-desktop's twin; only default needs it
   ],
+  "mui-minimal": [
+    // The bulk of this brand's tokens are the vendored `--minimal-*` family,
+    // covered by BRAND_EXTENSION_PREFIXES. These three sit outside it.
+    "--info", // bare info hue; the theme exposes it alongside --minimal-info-*
+    "--text-hero", // display tier above --text-3xl, used by the marketing seed
+    "--space-20", // 80px — same section-y-desktop twin the default brand needs
+  ],
   openai: [
     "--space-16", // 64px — major section gap in OpenAI's DESIGN.md §5 spacing scale
   ],
@@ -252,6 +259,11 @@ export const BRAND_EXTENSIONS: Readonly<Record<string, readonly string[]>> = {
  */
 export const BRAND_EXTENSION_PREFIXES: readonly string[] = [
   "--tag-bg-",
+  // mui-minimal mirrors the vendored MUI "Minimal" theme, so its palette,
+  // typography and component-metric tokens arrive as one namespaced family
+  // (~246 names) rather than a handful of brand extras. They are listed by
+  // prefix because the set is owned by the upstream theme, not authored here.
+  "--minimal-",
 ];
 
 /**
