@@ -2335,14 +2335,13 @@ export async function fetchHostEditors(): Promise<
 export async function openProjectInEditor(
   projectId: string,
   editorId: import('@open-design/contracts').HostEditorId,
-  relPath?: string,
 ): Promise<import('@open-design/contracts').OpenProjectInEditorResponse> {
   const resp = await fetch(
     `/api/projects/${encodeURIComponent(projectId)}/open-in`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(relPath ? { editorId, relPath } : { editorId }),
+      body: JSON.stringify({ editorId }),
     },
   );
   if (!resp.ok) {

@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"SEED=/Users/hskang/poc/open-design/plugins/_official/examples/react-project/assets/minimal-vite/src\\necho \\\"=== register-icons structure ===\\\" && sed -n '1,40p' \\\"$SEED/components/iconify/...",
-  "error": "Exit code 1\n=== register-icons structure ===\nsed: /Users/hskang/poc/open-design/plugins/_official/examples/react-project/assets/minimal-vite/src/components/iconify/register-icons.tsx: No such file or directory",
-  "timestamp": "2026-06-15T03:00:45.119Z",
-  "retry_count": 1
-}
