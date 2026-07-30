@@ -66,12 +66,43 @@ export function resolveReactSeedDir(
 }
 
 /** Count files (not directories) under a tree, recursively. */
-async function countFiles(dir: string): Promise<number> {
+/**
+ * Seed entries that must never reach a generated project.
+ *
+ * A seed is a source tree, but it lives in a working directory where anyone may
+ * have run `npm install` or a build — and none of that is tracked in git, so it
+ * is invisible until it is copied. Copying `node_modules` is actively harmful,
+ * not just wasteful: `runDev` installs only when `node_modules` is absent, so a
+ * copied one means the install never runs and the seed's lockfile is never
+ * honored. That silently defeats the whole point of pinning
+ * (`docs/posicube/generated-project-stack.md`), and the tree it leaves behind was
+ * resolved from whatever the lockfile said at the time someone ran install.
+ *
+ * Measured on a machine where a seed had been installed once: 30,315 files
+ * copied instead of ~370.
+ */
+const SEED_COPY_EXCLUDE = new Set([
+  'node_modules',
+  '.next',
+  'out',
+  'dist',
+  '.turbo',
+  'tsconfig.tsbuildinfo',
+]);
+
+function isExcludedSeedEntry(seedRoot: string, absPath: string): boolean {
+  const rel = path.relative(seedRoot, absPath);
+  if (!rel) return false;
+  return rel.split(path.sep).some((segment) => SEED_COPY_EXCLUDE.has(segment));
+}
+
+async function countFiles(dir: string, seedRoot = dir): Promise<number> {
   let total = 0;
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) total += await countFiles(full);
+    if (isExcludedSeedEntry(seedRoot, full)) continue;
+    if (entry.isDirectory()) total += await countFiles(full, seedRoot);
     else total += 1;
   }
   return total;
@@ -142,11 +173,13 @@ export async function materializeReactScaffold(
     }
     // Recursive copy preserving dotfiles (.npmrc/.gitignore are part of the
     // seed). `force: true` here is the fs-level overwrite of identical files;
-    // the project-level non-clobber guard already ran above.
+    // the project-level non-clobber guard already ran above. The filter keeps
+    // local install/build output out of the project — see SEED_COPY_EXCLUDE.
     await cp(resolved.dir, input.projectDir, {
       recursive: true,
       force: true,
       errorOnExist: false,
+      filter: (src) => !isExcludedSeedEntry(resolved.dir, src),
     });
     state.variant = resolved.variant;
     state.source = resolved.dir;

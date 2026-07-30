@@ -9,10 +9,68 @@
 // single source of truth for "what does each framework run, and where does it
 // emit its preview entry".
 
+import type { ReactBuildPackageManager } from '@open-design/contracts';
+
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 export type ReactFramework = 'vite' | 'next';
+
+// ---- dependency install -----------------------------------------------------
+
+/**
+ * `frozen` installs exactly what the lockfile says and fails if package.json has
+ * drifted from it. `update` is the permissive install that resolves ranges and
+ * rewrites the lockfile.
+ */
+export type ReactInstallMode = 'frozen' | 'update';
+
+const LOCKFILE_BY_PM: Record<ReactBuildPackageManager, string> = {
+  npm: 'package-lock.json',
+  pnpm: 'pnpm-lock.yaml',
+  yarn: 'yarn.lock',
+};
+
+const FROZEN_ARGS: Record<ReactBuildPackageManager, readonly string[]> = {
+  npm: ['ci'],
+  pnpm: ['install', '--frozen-lockfile'],
+  yarn: ['install', '--immutable'],
+};
+
+/**
+ * Resolve how to install a project's dependencies.
+ *
+ * Seeds ship a lockfile precisely so two projects generated weeks apart get the
+ * same tree — but a plain `install` resolves the `^` ranges in package.json and
+ * rewrites that lockfile, which is how a dependency silently moves under a
+ * generated project (the `apexcharts` bar-chart regression in
+ * `docs/posicube/status.md` is one of these). So prefer the frozen install
+ * whenever a lockfile is present.
+ *
+ * When no lockfile exists there is nothing to be faithful to, so fall back to
+ * the permissive install rather than failing the project.
+ */
+export function reactInstallCommand(
+  pm: ReactBuildPackageManager,
+  projectDir: string,
+): { args: string[]; mode: ReactInstallMode; reason: string } {
+  const lockfile = LOCKFILE_BY_PM[pm];
+  if (existsSync(path.join(projectDir, lockfile))) {
+    return { args: [...FROZEN_ARGS[pm]], mode: 'frozen', reason: `${lockfile} present` };
+  }
+  return { args: ['install'], mode: 'update', reason: `no ${lockfile}` };
+}
+
+/**
+ * The permissive retry for a frozen install that failed. A frozen install also
+ * fails when package.json and the lockfile genuinely disagree — which happens
+ * legitimately when the agent adds a dependency mid-turn — and refusing to build
+ * in that case would be worse than losing pinning for that one project. Callers
+ * log which path ran so a silent downgrade is still visible.
+ */
+export function reactInstallFallbackCommand(): { args: string[]; mode: ReactInstallMode } {
+  return { args: ['install'], mode: 'update' };
+}
 
 const NEXT_CONFIG_FILES = [
   'next.config.ts',

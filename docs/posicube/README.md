@@ -12,6 +12,7 @@ then the one that matches what you are about to do.
 | [`fork-maintenance.md`](./fork-maintenance.md) | Syncing upstream, branching, or wondering what we changed vs upstream |
 | [`architecture-decisions.md`](./architecture-decisions.md) | Touching A2UI, the react-project pipeline, or asking "why is it built this way" |
 | [`status.md`](./status.md) | Picking up work — what is done, what is unverified, what is next |
+| [`generated-project-stack.md`](./generated-project-stack.md) | Adding or upgrading a dependency in a react-project seed, or wondering why one is pinned |
 | [`history/`](./history/) | Wanting the original requirements interview and the re-base plan verbatim |
 
 ## What this repo is, in one paragraph

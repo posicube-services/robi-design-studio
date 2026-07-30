@@ -24,7 +24,12 @@ import {
   buildChildEnv,
   detectReactBuildPackageManager,
 } from './react-build.js';
-import { detectReactFramework, reactDevCommand } from './react-framework.js';
+import {
+  detectReactFramework,
+  reactDevCommand,
+  reactInstallCommand,
+  reactInstallFallbackCommand,
+} from './react-framework.js';
 
 const MAX_LOG_LINES = 400;
 const READY_TIMEOUT_MS = 60_000;
@@ -148,10 +153,40 @@ function waitForPort(port: number, signal: { stopped: boolean }): Promise<void> 
   });
 }
 
-function runInstall(active: ActiveDev, pm: string, cwd: string): Promise<boolean> {
+/**
+ * Install dependencies, preferring the lockfile-faithful command. A frozen
+ * install that fails is retried permissively — see `reactInstallFallbackCommand`
+ * — and both attempts are logged so the downgrade is visible in the preview
+ * panel's Log rather than silent.
+ */
+async function runInstall(
+  active: ActiveDev,
+  pm: ReactBuildPackageManager,
+  cwd: string,
+): Promise<boolean> {
+  const first = reactInstallCommand(pm, cwd);
+  appendLog(active, `[install] ${first.mode} (${first.reason})`);
+  if (await spawnInstall(active, pm, first.args, cwd)) return true;
+  if (first.mode !== 'frozen') return false;
+
+  const retry = reactInstallFallbackCommand();
+  appendLog(
+    active,
+    `[install] frozen install failed — retrying with \`${pm} ${retry.args.join(' ')}\`. `
+      + 'package.json and the lockfile disagree; regenerate the lockfile to restore pinning.',
+  );
+  return spawnInstall(active, pm, retry.args, cwd);
+}
+
+function spawnInstall(
+  active: ActiveDev,
+  pm: string,
+  args: string[],
+  cwd: string,
+): Promise<boolean> {
   return new Promise((resolve) => {
-    appendLog(active, `$ ${pm} install`);
-    const child = spawn(pm, ['install'], {
+    appendLog(active, `$ ${pm} ${args.join(' ')}`);
+    const child = spawn(pm, args, {
       cwd,
       env: buildChildEnv(),
       shell: process.platform === 'win32',

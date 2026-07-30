@@ -22,6 +22,8 @@ import {
   detectReactFramework,
   reactBuildOutDir,
   reactBuildOutEntry,
+  reactInstallCommand,
+  reactInstallFallbackCommand,
 } from './react-framework.js';
 
 // Keep only the most recent lines so a chatty build cannot grow the log
@@ -189,9 +191,24 @@ async function runBuild(active: ActiveBuild, input: StartReactBuildInput): Promi
       await rm(path.join(projectDir, outDir), { recursive: true, force: true });
     }
 
-    appendLog(active, `$ ${pm} install`);
-    const installOk = await runStep(active, pm, ['install'], projectDir);
+    // Prefer the lockfile-faithful install so a build reproduces the tree the
+    // seed pinned; retry permissively when package.json has drifted from the
+    // lockfile (e.g. the agent added a dependency), logging the downgrade.
+    const install = reactInstallCommand(pm, projectDir);
+    appendLog(active, `[install] ${install.mode} (${install.reason})`);
+    appendLog(active, `$ ${pm} ${install.args.join(' ')}`);
+    let installOk = await runStep(active, pm, install.args, projectDir);
     if (active.canceled) return;
+    if (!installOk && install.mode === 'frozen') {
+      const retry = reactInstallFallbackCommand();
+      appendLog(
+        active,
+        `[install] frozen install failed — retrying with \`${pm} ${retry.args.join(' ')}\`. `
+          + 'package.json and the lockfile disagree; regenerate the lockfile to restore pinning.',
+      );
+      installOk = await runStep(active, pm, retry.args, projectDir);
+      if (active.canceled) return;
+    }
     if (!installOk) {
       markFailed(active, `${pm} install failed`);
       return;
