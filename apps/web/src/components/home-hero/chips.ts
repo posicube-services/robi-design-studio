@@ -81,6 +81,16 @@ export interface HomeHeroChip {
   // (see `homeHeroChipDescription` in HomeHero.tsx). Kept on the data table so
   // the catalog reads as a self-contained scenario taxonomy.
   description?: string;
+  // Name the created project after this chip's label instead of the applied
+  // plugin's title.
+  //
+  // Upstream names a template-created project after its plugin (EntryShell), and
+  // for a 1:1 chip→plugin mapping that reads fine. It stops working when several
+  // chips share one plugin: posicube's three react-project chips would all
+  // produce a project called "React Project", so the tab list cannot tell an
+  // A2UI screen from a Vite SPA. Opt in here rather than special-casing chip ids
+  // inside HomeView, so the list of chips that need it stays in this data table.
+  namesProject?: boolean;
   action: ChipAction;
 }
 
@@ -130,6 +140,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     icon: 'blocks',
     group: 'create',
     description: 'Spec-driven screens from a fixed catalog',
+    namesProject: true,
     action: {
       kind: 'apply-scenario',
       pluginId: 'example-react-project',
@@ -150,6 +161,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     icon: 'layers-filled',
     group: 'create',
     description: 'Multi-file Next app with SSR and file routing',
+    namesProject: true,
     action: {
       kind: 'apply-scenario',
       pluginId: 'example-react-project',
@@ -166,6 +178,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     icon: 'file-code',
     group: 'create',
     description: 'Vite + React SPA you can deploy as static files',
+    namesProject: true,
     action: {
       kind: 'apply-scenario',
       pluginId: 'example-react-project',

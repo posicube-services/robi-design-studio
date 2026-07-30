@@ -2020,7 +2020,13 @@ export function HomeView({
         pluginType: submittedActive?.record.marketplaceTrust ?? (routedPluginId ? 'official' : null),
         skillId: resolvedSkillId,
         appliedPluginSnapshotId: submittedActive?.result?.appliedPlugin?.snapshotId ?? null,
-        pluginTitle: submittedActive?.record.title ?? null,
+        // A chip may name the project itself (see `namesProject` in chips.ts).
+        // Needed when several chips share one plugin, where the plugin title
+        // would make every one of them produce the same project name.
+        pluginTitle:
+          (submittedActive?.chipId && findChip(submittedActive.chipId)?.namesProject
+            ? homeHeroChipLabel(submittedActive.chipId, t)
+            : submittedActive?.record.title) ?? null,
         taskKind: submittedActive?.result?.appliedPlugin?.taskKind ?? null,
         pluginInputs: submittedPluginInputs,
         projectKind: submittedProjectKind,
