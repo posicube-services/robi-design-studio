@@ -104,6 +104,17 @@ project am I in?" branch; the plugin query names `a2ui-spec.json` as the sole
 A2UI deliverable) but the fix is **not yet verified** — it needs one clean run
 that produces a spec and no `.tsx`.
 
+Also unexercised: the `plain` and `minimal` variants, and the `react/build` path.
+(`react/build` cannot render an A2UI screen at all — `/a2ui` is `force-dynamic`,
+so it is a per-request read of `a2ui-spec.json`, not a static artifact. Build mode
+stays a plain-react-project affordance.)
+
+One claim in this file is still only *probably* true: seed **idempotency**. A
+second run on the same project did not visibly clobber anything — the spec
+survived and the dev server kept serving — but the `[react] materialized …`
+daemon log line was not captured, so the skip branch was never positively
+observed. Confirm it with a deliberate edit-then-rerun before trusting it.
+
 ### Dark mode is out of scope, by contract
 
 Worth recording so it is not rediscovered as a bug: **1 of 152 design systems
@@ -120,17 +131,6 @@ derive a dark scheme from the light tokens (cheap, but a good dark theme is not
 an inversion — surfaces and contrast need re-deriving, so per-brand quality would
 be uneven), or add a dark layer to the token contract (152 brands, upstream-scale,
 but brand-authored and therefore correct).
-
-Also unexercised: the `plain` and `minimal` variants, and the `react/build` path.
-(`react/build` cannot render an A2UI screen at all — `/a2ui` is `force-dynamic`,
-so it is a per-request read of `a2ui-spec.json`, not a static artifact. Build mode
-stays a plain-react-project affordance.)
-
-One claim in this file is still only *probably* true: seed **idempotency**. A
-second run on the same project did not visibly clobber anything — the spec
-survived and the dev server kept serving — but the `[react] materialized …`
-daemon log line was not captured, so the skip branch was never positively
-observed. Confirm it with a deliberate edit-then-rerun before trusting it.
 
 ## What is deliberately not here
 
