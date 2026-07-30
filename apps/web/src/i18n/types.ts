@@ -1134,6 +1134,7 @@ export interface Dict {
   'homeHero.confirmReplaceBody': string;
   'homeHero.confirmReplace': string;
   'homeHero.chip.a2uiScreen': string;
+  'homeHero.chip.a2uiShadcnScreen': string;
   'homeHero.chip.nextProject': string;
   'homeHero.chip.reactProject': string;
   'homeHero.chip.prototype': string;
@@ -1160,6 +1161,7 @@ export interface Dict {
   'homeHero.chip.mobile': string;
   'homeHero.chip.document': string;
   'homeHero.chip.a2uiScreenDesc': string;
+  'homeHero.chip.a2uiShadcnScreenDesc': string;
   'homeHero.chip.nextProjectDesc': string;
   'homeHero.chip.reactProjectDesc': string;
   'homeHero.chip.prototypeDesc': string;

@@ -93,6 +93,44 @@ Enforcement is chosen at project creation:
 | `plain` | none — agent writes what it likes | soft: active design system's `tokens.css` | `scaffold` / `scaffold-next` |
 | `minimal` | MUI Minimal component library | medium: components fixed, composition free | `minimal-vite` / `minimal-next` |
 | `a2ui` | MUI Minimal **+ fixed spec catalog** | hard: Zod gate | `minimal-next-a2ui` |
+| `a2ui-shadcn` | shadcn + Tailwind v4 **+ the same catalog** | hard: the same Zod gate | `shadcn-next-a2ui` |
+
+### Why two a2ui variants
+
+`a2ui-shadcn` is the same contract on a different substrate, and it exists because
+of a defect in `a2ui`: **the design system does not reach the screen.** MUI takes
+its colour, type and radius from a hardcoded JS theme (`themeConfig`), so picking
+Airbnb or Stripe changes nothing. The seed's own `tokens.css` admits it —
+*"additive and intentionally neutral: it does NOT override the MUI theme"*. That
+contradicts D4, which promises design tokens are exactly what varies per customer.
+
+Tailwind fixes it for free rather than by construction: **150 of the 152 design
+systems already ship a `tailwind-v4.css`** that maps their tokens onto Tailwind's
+theme (57 mappings across colour, spacing, type, radius, shadow and motion), and
+that file is byte-identical across brands — so a brand switch is one file. The two
+brands that lack it are `tom-modern` and our own `mui-minimal`, which is its own
+signal.
+
+Verified before committing to it: the same spec rendered under Stripe,
+Neobrutalism and Apple produced three genuinely different screens, and the
+`a2ui-spec.json` shipped with the MUI seed renders on the shadcn seed **unchanged**
+— no spec edit, no gate failure, no `UnknownNode` diagnostic. That portability is
+D1 paying out: because the artifact is a spec and not code, the substrate is
+replaceable.
+
+Two gaps the port surfaced, both pre-existing and previously masked by MUI:
+
+- The catalog's palette domain (`primary secondary info success warning error`,
+  extracted from the MUI theme) has **no token for `secondary` or `info`** — the
+  contract guarantees only `--accent --success --warn --danger`. Rather than shrink
+  the catalog, both are derived by rotating hue off `--accent`. The catalog stays
+  byte-identical, which is what keeps existing specs valid.
+- A multi-series chart had no palette to draw from, for the same reason. Same
+  technique, verified legible across all three test brands.
+
+`a2ui` stays until `a2ui-shadcn` has been exercised on real work. Keeping both is
+what makes the migration reversible; the seeds are selected by a `variant` value,
+so coexistence needed no new machinery.
 
 `a2ui`'s renderer is a Next app, so there is no Vite twin — a Vite request
 degrades to `minimal` and reports the variant it actually got, rather than

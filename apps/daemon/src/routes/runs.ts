@@ -569,8 +569,12 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
       const fwRaw = inputs && typeof inputs.framework === 'string' ? inputs.framework : '';
       const framework = /next/i.test(fwRaw) ? 'next' : 'vite';
       const variantRaw = inputs && typeof inputs.variant === 'string' ? inputs.variant : '';
+      // Order matters: both a2ui labels contain "A2UI", so the shadcn one has to
+      // be tested first or it would resolve to the MUI seed.
       const variant = /a2ui/i.test(variantRaw)
-        ? 'a2ui'
+        ? /shadcn|tailwind/i.test(variantRaw)
+          ? 'a2ui-shadcn'
+          : 'a2ui'
         : /plain/i.test(variantRaw)
           ? 'plain'
           : 'minimal';

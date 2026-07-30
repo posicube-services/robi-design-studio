@@ -3769,6 +3769,7 @@ function ShortcutsMenu({
 function homeHeroChipDescription(chipId: string, t: ReturnType<typeof useT>): string {
   switch (chipId) {
     case 'a2ui-screen': return t('homeHero.chip.a2uiScreenDesc');
+    case 'a2ui-shadcn-screen': return t('homeHero.chip.a2uiShadcnScreenDesc');
     case 'next-project': return t('homeHero.chip.nextProjectDesc');
     case 'react-project': return t('homeHero.chip.reactProjectDesc');
     case 'prototype': return t('homeHero.chip.prototypeDesc');

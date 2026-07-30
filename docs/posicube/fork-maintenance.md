@@ -39,9 +39,9 @@ The value of this fork is that it stays mergeable. As of the re-base:
 
 | Metric | Value |
 | --- | --- |
-| Files added (ours) | 1,211 |
-| Upstream files **modified** | 36 — of which **20 are i18n** |
-| Lines in those modifications | **+550 / −4** (i18n: +140, everything else: +410 / −4) |
+| Files added (ours) | 1,283 |
+| Upstream files **modified** | 37 — of which **20 are i18n** |
+| Lines in those modifications | **+643 / −5** (i18n: +180, everything else: +463 / −5) |
 | Upstream files **deleted** | 0 |
 
 Measured 2026-07-30 with `git diff --numstat --diff-filter=M
@@ -54,12 +54,12 @@ Every modification is an *insertion at an existing extension point* — a union
 member, a switch case, one route registration, one JSX branch, a brand-token
 registration. No upstream logic was restructured.
 
-**Read the file count with the i18n split in mind.** 20 of the 36 are the 19
+**Read the file count with the i18n split in mind.** 20 of the 37 are the 19
 locale files plus `i18n/types.ts`, and they are touched purely because
 `types.ts` is a typed `Dict`: every user-facing string we add costs 20 upstream
 file touches and cannot be avoided (a missing locale is a typecheck error, per
 the root `AGENTS.md`). They are pure key insertions and have never conflicted.
-The number that actually predicts merge pain is the **16 non-i18n files** —
+The number that actually predicts merge pain is the **17 non-i18n files** —
 keep *that* small.
 
 **Preserve this property.** When a change appears to need upstream code
@@ -74,11 +74,12 @@ prefer adding a new file over reshaping an existing one.
 | `apps/daemon/src/routes/runs.ts` | seed a react-project before its first agent turn |
 | `apps/web/src/components/FileWorkspace.tsx` | `REACT_PREVIEW_TAB` — a root tab hosting `ReactBuildPanel`, plus its tab button, default-tab entry and one line in the persisted-tab fallback guard |
 | `apps/web/src/components/FileViewer.tsx` | skip upstream's single-file `react-component` Babel renderer for react-projects (see below) |
-| `apps/web/src/components/HomeHero.tsx` | 3 chip-description cases |
-| `apps/web/src/components/home-hero/chips.ts` | the 3 react-project chips + their slots in `CREATE_RAIL_ORDER` |
-| `apps/web/src/components/home-hero/chip-labels.ts` | 3 chip-label cases |
+| `apps/web/src/components/HomeHero.tsx` | 4 chip-description cases |
+| `apps/web/src/components/home-hero/chips.ts` | the 4 react-project chips, the `namesProject` field, and their slots in `CREATE_RAIL_ORDER` |
+| `apps/web/src/components/home-hero/chip-labels.ts` | 4 chip-label cases |
+| `apps/web/src/components/HomeView.tsx` | one line so a chip with `namesProject` names the project after itself instead of after the shared plugin title |
 | `apps/web/src/providers/daemon.ts` | react build/dev API client (+114, append-only) |
-| `apps/web/src/i18n/types.ts` + 19 `locales/*.ts` | 7 keys × 20 files — chip labels/descriptions and the preview tab label |
+| `apps/web/src/i18n/types.ts` + 19 `locales/*.ts` | 9 keys × 20 files — chip labels/descriptions and the preview tab label |
 | `packages/contracts/src/index.ts` | export `api/react.js` (1 line) |
 | `packages/contracts/src/api/projects.ts` | `ProjectKind` gains `'react-project'` |
 | `packages/contracts/src/plugins/scenario-defaults.ts` | bind that kind to the `example-react-project` scenario |
@@ -112,8 +113,8 @@ preview on which file is open, that is the same mistake.
 | Area | What |
 | --- | --- |
 | react-project pipeline | `apps/daemon/src/react-{scaffold,build,dev,framework,build-routes}.ts` — scaffold a real project tree, run its dev server, run its build |
-| Seeds | `plugins/_official/examples/react-project/assets/{minimal-next,minimal-next-a2ui,minimal-vite,scaffold,scaffold-next}` |
-| A2UI core | inside the `minimal-next-a2ui` seed: `src/genui/` (schema, renderer, registry), `src/blocks/` (30 blocks + the `unknown-node` fallback), `src/authoring/` (Zod gate + catalog), the `/a2ui` route, `a2ui-spec.json` |
+| Seeds | `plugins/_official/examples/react-project/assets/{minimal-next,minimal-next-a2ui,shadcn-next-a2ui,minimal-vite,scaffold,scaffold-next}` — all six ship a lockfile and pass `npm ci` (see `generated-project-stack.md`) |
+| A2UI core | inside each a2ui seed: `src/genui/` (schema, renderer, registry), `src/authoring/` (Zod gate + catalog), `src/blocks/` (30 blocks + the `unknown-node` fallback), the `/a2ui` route, `a2ui-spec.json`. `shadcn-next-a2ui` carries `genui/` and `authoring/` **byte-identical** to `minimal-next-a2ui` — only the blocks differ — which is why one spec renders on both. |
 | Authoring skill | `design-templates/a2ui-spec/SKILL.md` |
 | Design system | `design-systems/mui-minimal/` |
 | Web UI | `apps/web/src/components/ReactBuildPanel.tsx` |

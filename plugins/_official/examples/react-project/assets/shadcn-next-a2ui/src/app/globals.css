@@ -1,0 +1,26 @@
+/**
+ * Open Design design-system entry.
+ *
+ * `brand-tokens.css` holds the ACTIVE design system's `:root` token block and is
+ * the only file that changes when the brand changes — `brand-theme.css` maps
+ * those tokens onto Tailwind's theme and is byte-identical across all Open
+ * Design brands, so it never needs editing.
+ *
+ * To apply a design system: replace `brand-tokens.css` with that brand's
+ * `tokens.css` verbatim. Every block styles itself from these custom properties
+ * through Tailwind utilities, so the whole screen follows. There is no second
+ * theme to keep in sync and nothing to regenerate.
+ */
+@import "./brand-theme.css";
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}

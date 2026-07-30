@@ -17,6 +17,7 @@ see "Verified by running it" below.
 | Pick enforcement at creation (`plain` / `minimal` / `a2ui`) | code complete — only `a2ui` has been exercised |
 | Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
 | Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
+| A2UI on shadcn + Tailwind (`a2ui-shadcn`) | seed complete — all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged. Not yet run with a real agent. |
 
 Upstream moved again during that same session (`89d6d4ef2`, one commit past what
 we merged). Nothing urgent; it is noted so the next sync starts from a known

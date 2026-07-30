@@ -111,20 +111,23 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     // plugin to the composer.
     action: { kind: 'create-brand-kit' },
   },
-  // ---- posicube: the three react-project entry points -------------------
+  // ---- posicube: the react-project entry points --------------------------
   //
-  // All three dispatch to the same `example-react-project` scenario and differ
+  // All of them dispatch to the same `example-react-project` scenario and differ
   // only in the `framework` + `variant` inputs they seed. The daemon's seed
   // materializer reads exactly those two to pick a scaffold (see
   // `maybeMaterializeReactProjectSeed` in apps/daemon/src/routes/runs.ts).
   //
-  // Three chips rather than one with dropdowns, because each combination is a
+  // Separate chips rather than one with dropdowns, because each combination is a
   // different deliverable and the chip name can then say which one you get:
   //
-  //   A2UI screen     → a validated JSON spec rendered at runtime (hard
-  //                     enforcement: fixed catalog + Zod gate). Next only.
-  //   Next.js project → a Next app: SSR, file routing, server data.
-  //   React project   → a Vite SPA: static output, no Node runtime needed.
+  //   A2UI screen          → a validated JSON spec rendered at runtime (hard
+  //                          enforcement: fixed catalog + Zod gate). Next only.
+  //   A2UI screen (shadcn) → the same contract on shadcn + Tailwind, where the
+  //                          design system's tokens drive the blocks. Both exist
+  //                          while the substrate migration runs.
+  //   Next.js project      → a Next app: SSR, file routing, server data.
+  //   React project        → a Vite SPA: static output, no Node runtime needed.
   //
   // Pinning both inputs per chip is what removes the impossible combination
   // (A2UI on Vite) from the home screen without needing per-chip filtering of
@@ -152,6 +155,29 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
       inputs: {
         framework: 'Next.js',
         variant: 'A2UI (spec-driven, Next.js only)',
+      },
+    },
+  },
+  {
+    id: 'a2ui-shadcn-screen',
+    label: 'A2UI screen (shadcn)',
+    icon: 'grid',
+    group: 'create',
+    description: 'Same A2UI contract, styled by the design system',
+    namesProject: true,
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-react-project',
+      projectKind: 'react-project',
+      // Identical schema, catalog and Zod gate to `a2ui-screen` — an existing
+      // a2ui-spec.json renders here unchanged. The difference is the substrate:
+      // blocks are Tailwind utilities reading the brand's tokens, so choosing a
+      // design system actually restyles the screen. The MUI seed cannot do that
+      // (its palette lives in a hardcoded JS theme), which is why both exist
+      // while the migration runs.
+      inputs: {
+        framework: 'Next.js',
+        variant: 'A2UI on shadcn + Tailwind (spec-driven, Next.js only)',
       },
     },
   },
@@ -489,6 +515,7 @@ export const CREATE_RAIL_ORDER = [
   // product decision about what the rail leads with. Slotting in behind it
   // keeps these three inside the first viewport without overriding that.
   'a2ui-screen',
+  'a2ui-shadcn-screen',
   'next-project',
   'react-project',
   'prototype',

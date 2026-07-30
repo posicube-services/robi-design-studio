@@ -128,6 +128,7 @@
         "required": true,
         "options": [
           "A2UI (spec-driven, Next.js only)",
+          "A2UI on shadcn + Tailwind (spec-driven, Next.js only)",
           "Minimal (MUI theme)",
           "Plain (no UI library)"
         ],

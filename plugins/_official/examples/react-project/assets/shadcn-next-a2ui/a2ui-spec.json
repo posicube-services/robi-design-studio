@@ -1,0 +1,55 @@
+{
+  "version": "0.1.0",
+  "root": "root",
+  "nodes": [
+    {
+      "id": "root",
+      "type": "Page",
+      "children": ["header", "form", "table"]
+    },
+    {
+      "id": "header",
+      "type": "PageHeader",
+      "props": {
+        "title": "문의 접수",
+        "breadcrumbs": ["대시보드", "고객지원", "문의 접수"],
+        "subtitle": "문의를 접수하고 접수내역을 확인하세요."
+      }
+    },
+    {
+      "id": "form",
+      "type": "Form",
+      "props": {
+        "title": "문의 접수 폼",
+        "submitLabel": "제출",
+        "fields": [
+          { "name": "name", "label": "이름", "type": "text", "required": true },
+          { "name": "email", "label": "이메일", "type": "email", "required": true },
+          {
+            "name": "message",
+            "label": "문의 내용",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "문의하실 내용을 입력해주세요"
+          }
+        ]
+      }
+    },
+    {
+      "id": "table",
+      "type": "DataTable",
+      "props": {
+        "title": "접수내역",
+        "hook": "useCustomers",
+        "statusField": "status",
+        "pageSize": 5,
+        "columns": [
+          { "field": "name", "header": "이름", "format": "entity", "secondaryField": "email" },
+          { "field": "company", "header": "회사" },
+          { "field": "status", "header": "상태" },
+          { "field": "joinedAt", "header": "접수일", "format": "date" }
+        ]
+      }
+    }
+  ]
+}

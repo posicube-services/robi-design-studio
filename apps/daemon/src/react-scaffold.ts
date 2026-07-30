@@ -9,8 +9,12 @@
 // dual-track).
 //
 // Seed asset layout under `<plugin.fsPath>/assets/`:
-//   minimal-vite/   minimal-next/   ← curated MUI minimal seeds (default)
-//   scaffold/       scaffold-next/  ← lightweight `plain` starters (fallback)
+//   minimal-vite/   minimal-next/       ← curated MUI minimal seeds (default)
+//   minimal-next-a2ui/                  ← A2UI on MUI Minimal
+//   shadcn-next-a2ui/                   ← A2UI on shadcn + Tailwind v4, where the
+//                                         active design system's tokens actually
+//                                         drive the blocks
+//   scaffold/       scaffold-next/      ← lightweight `plain` starters (fallback)
 
 import { existsSync } from 'node:fs';
 import { cp, readdir, stat } from 'node:fs/promises';
@@ -26,8 +30,12 @@ function seedDirName(
   framework: ReactScaffoldFramework,
   variant: ReactScaffoldVariant,
 ): string {
-  // a2ui carries the spec renderer + Zod gate, which is a Next app; there is
-  // no Vite twin, so a vite request degrades to plain `minimal` below.
+  // Both a2ui variants carry the spec renderer + Zod gate and are Next apps;
+  // there is no Vite twin of either, so a vite request degrades to plain
+  // `minimal` below.
+  if (variant === 'a2ui-shadcn') {
+    return framework === 'next' ? 'shadcn-next-a2ui' : 'minimal-vite';
+  }
   if (variant === 'a2ui') {
     return framework === 'next' ? 'minimal-next-a2ui' : 'minimal-vite';
   }
@@ -51,14 +59,14 @@ export function resolveReactSeedDir(
 ): { dir: string; variant: ReactScaffoldVariant } | null {
   const primary = path.join(pluginAssetsRoot, seedDirName(framework, variant));
   if (existsSync(primary)) return { dir: primary, variant };
-  // a2ui on vite (or a missing a2ui seed) lands on the MUI Minimal starter:
-  // same design system, no spec gate. Report `minimal` so the caller sees the
-  // variant it actually got rather than the one it asked for.
-  if (variant === 'a2ui') {
+  // Either a2ui variant on vite (or a missing a2ui seed) lands on the MUI
+  // Minimal starter: same design system, no spec gate. Report `minimal` so the
+  // caller sees the variant it actually got rather than the one it asked for.
+  if (variant === 'a2ui' || variant === 'a2ui-shadcn') {
     const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'minimal'));
     if (existsSync(fallback)) return { dir: fallback, variant: 'minimal' };
   }
-  if (variant === 'minimal' || variant === 'a2ui') {
+  if (variant === 'minimal' || variant === 'a2ui' || variant === 'a2ui-shadcn') {
     const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'plain'));
     if (existsSync(fallback)) return { dir: fallback, variant: 'plain' };
   }

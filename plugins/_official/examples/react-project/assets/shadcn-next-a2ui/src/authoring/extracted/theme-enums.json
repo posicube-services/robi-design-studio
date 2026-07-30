@@ -1,0 +1,258 @@
+{
+  "generatedBy": "scripts/extract-theme-enums.ts (pnpm extract:catalog)",
+  "sourceTheme": "posicube-admin-starter MUI Minimal v7.6.1 (src/theme)",
+  "paletteColorKeys": [
+    "primary",
+    "secondary",
+    "info",
+    "success",
+    "warning",
+    "error"
+  ],
+  "palette": {
+    "primary": {
+      "lighter": "#C8FAD6",
+      "light": "#5BE49B",
+      "main": "#00A76F",
+      "dark": "#007867",
+      "darker": "#004B50"
+    },
+    "secondary": {
+      "lighter": "#EFD6FF",
+      "light": "#C684FF",
+      "main": "#8E33FF",
+      "dark": "#5119B7",
+      "darker": "#27097A"
+    },
+    "info": {
+      "lighter": "#CAFDF5",
+      "light": "#61F3F3",
+      "main": "#00B8D9",
+      "dark": "#006C9C",
+      "darker": "#003768"
+    },
+    "success": {
+      "lighter": "#D3FCD2",
+      "light": "#77ED8B",
+      "main": "#22C55E",
+      "dark": "#118D57",
+      "darker": "#065E49"
+    },
+    "warning": {
+      "lighter": "#FFF5CC",
+      "light": "#FFD666",
+      "main": "#FFAB00",
+      "dark": "#B76E00",
+      "darker": "#7A4100"
+    },
+    "error": {
+      "lighter": "#FFE9D5",
+      "light": "#FFAC82",
+      "main": "#FF5630",
+      "dark": "#B71D18",
+      "darker": "#7A0916"
+    }
+  },
+  "typographyVariants": [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "subtitle1",
+    "subtitle2",
+    "body1",
+    "body2",
+    "caption",
+    "overline",
+    "button",
+    "inherit"
+  ],
+  "spacingUnit": null,
+  "borderRadius": 8,
+  "customShadowKeys": [
+    "z1",
+    "z4",
+    "z8",
+    "z12",
+    "z16",
+    "z20",
+    "z24",
+    "dialog",
+    "card",
+    "dropdown",
+    "primary",
+    "secondary",
+    "info",
+    "success",
+    "warning",
+    "error"
+  ],
+  "components": {
+    "MuiLink": {
+      "defaultProps": {
+        "underline": "hover"
+      },
+      "variantProps": {}
+    },
+    "MuiTab": {
+      "defaultProps": {
+        "disableRipple": true,
+        "iconPosition": "start"
+      },
+      "variantProps": {}
+    },
+    "MuiTabs": {
+      "defaultProps": {
+        "variant": "scrollable",
+        "textColor": "inherit",
+        "indicatorColor": "inherit",
+        "allowScrollButtonsMobile": true
+      },
+      "variantProps": {}
+    },
+    "MuiChip": {
+      "defaultProps": {
+        "variant": "soft"
+      },
+      "variantProps": {}
+    },
+    "MuiStack": {
+      "defaultProps": {
+        "useFlexGap": true
+      },
+      "variantProps": {}
+    },
+    "MuiPaper": {
+      "defaultProps": {
+        "elevation": 0
+      },
+      "variantProps": {}
+    },
+    "MuiDialogActions": {
+      "defaultProps": {
+        "disableSpacing": true
+      },
+      "variantProps": {}
+    },
+    "MuiAppBar": {
+      "defaultProps": {
+        "color": "transparent"
+      },
+      "variantProps": {}
+    },
+    "MuiAvatarGroup": {
+      "defaultProps": {
+        "max": 4
+      },
+      "variantProps": {}
+    },
+    "MuiSkeleton": {
+      "defaultProps": {
+        "animation": "wave",
+        "variant": "rounded"
+      },
+      "variantProps": {}
+    },
+    "MuiLinearProgress": {
+      "defaultProps": {
+        "color": "inherit"
+      },
+      "variantProps": {}
+    },
+    "MuiCircularProgress": {
+      "defaultProps": {
+        "color": "inherit"
+      },
+      "variantProps": {}
+    },
+    "MuiAccordion": {
+      "defaultProps": {
+        "square": true
+      },
+      "variantProps": {}
+    },
+    "MuiFormControl": {
+      "defaultProps": {
+        "variant": "outlined"
+      },
+      "variantProps": {}
+    },
+    "MuiFormHelperText": {
+      "defaultProps": {
+        "component": "div"
+      },
+      "variantProps": {}
+    },
+    "MuiRadio": {
+      "defaultProps": {
+        "size": "small"
+      },
+      "variantProps": {}
+    },
+    "MuiSlider": {
+      "defaultProps": {
+        "size": "small"
+      },
+      "variantProps": {}
+    },
+    "MuiCheckbox": {
+      "defaultProps": {
+        "size": "small"
+      },
+      "variantProps": {}
+    },
+    "MuiTextField": {
+      "defaultProps": {
+        "variant": "outlined"
+      },
+      "variantProps": {}
+    },
+    "MuiFilledInput": {
+      "defaultProps": {
+        "disableUnderline": true
+      },
+      "variantProps": {}
+    },
+    "MuiFab": {
+      "defaultProps": {
+        "color": "primary",
+        "size": "medium"
+      },
+      "variantProps": {}
+    },
+    "MuiButton": {
+      "defaultProps": {
+        "color": "inherit",
+        "disableElevation": true
+      },
+      "variantProps": {}
+    },
+    "MuiButtonGroup": {
+      "defaultProps": {
+        "color": "inherit",
+        "disableElevation": true
+      },
+      "variantProps": {}
+    },
+    "MuiDataGrid": {
+      "defaultProps": {
+        "showToolbar": true
+      },
+      "variantProps": {}
+    },
+    "MuiPickersTextField": {
+      "defaultProps": {
+        "variant": "outlined"
+      },
+      "variantProps": {}
+    },
+    "MuiPickersFilledInput": {
+      "defaultProps": {
+        "disableUnderline": true
+      },
+      "variantProps": {}
+    }
+  }
+}

@@ -149,7 +149,12 @@ export type ReactScaffoldFramework = 'vite' | 'next';
  *               agent composes a validated spec from a fixed catalog instead
  *               of writing JSX. Next.js only; vite degrades to `minimal`.
  */
-export type ReactScaffoldVariant = 'minimal' | 'plain' | 'a2ui';
+// `a2ui` is the MUI-Minimal spec renderer; `a2ui-shadcn` is the same contract
+// (identical schema, catalog and Zod gate) on shadcn + Tailwind v4, where the
+// active design system's tokens actually drive the blocks. Both exist so the
+// substrate can be migrated one project at a time — see
+// docs/posicube/architecture-decisions.md.
+export type ReactScaffoldVariant = 'minimal' | 'plain' | 'a2ui' | 'a2ui-shadcn';
 
 export interface ReactScaffoldRequest {
   framework: ReactScaffoldFramework;
