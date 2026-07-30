@@ -4285,6 +4285,7 @@ export const en: Dict = {
   'newproj.startFromLabel': 'Start from',
   'newproj.startBlank': 'Blank',
   'newproj.startBlankHint': 'Start from scratch',
+  'workspace.reactPreview': 'Preview',
   'workspace.pages': 'Pages',
   'workspace.allProjectFiles': 'All project files',
   'workspace.newBlankPage': 'New blank page',

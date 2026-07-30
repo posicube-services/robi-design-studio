@@ -4271,6 +4271,7 @@ export const hu: Dict = {
   'newproj.startFromLabel': 'Kiindulás',
   'newproj.startBlank': 'Üres',
   'newproj.startBlankHint': 'Kezdés a nulláról',
+  'workspace.reactPreview': 'Előnézet',
   'workspace.pages': 'Oldalak',
   'workspace.allProjectFiles': 'A projekt összes fájlja',
   'workspace.newBlankPage': 'Új üres oldal',

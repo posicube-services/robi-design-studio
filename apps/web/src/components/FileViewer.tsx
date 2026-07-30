@@ -1399,7 +1399,14 @@ export const FileViewer = memo(function FileViewer({
       />
     );
   }
-  if (rendererMatch?.renderer.id === 'react-component') {
+  // posicube: `react-component` is upstream's SELF-CONTAINED JSX artifact — one
+  // file, imports rewritten to CDN globals, transpiled by Babel standalone in a
+  // sandboxed iframe. A file inside a react-project is the opposite: a module of
+  // a real multi-file app with real imports resolved by its own bundler. Running
+  // it through that path produces nonsense (`import { z } from 'zod'` came out
+  // as `const { z } from 'zod'` → SyntaxError), so fall through to the plain
+  // source view. The running app is previewed by REACT_PREVIEW_TAB instead.
+  if (rendererMatch?.renderer.id === 'react-component' && projectKind !== 'react_project') {
     return (
       <ReactComponentViewer
         projectId={projectId}

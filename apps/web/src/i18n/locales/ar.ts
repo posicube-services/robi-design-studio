@@ -4271,6 +4271,7 @@ export const ar: Dict = {
   'newproj.startFromLabel': 'ابدأ من',
   'newproj.startBlank': 'فارغ',
   'newproj.startBlankHint': 'البدء من الصفر',
+  'workspace.reactPreview': 'معاينة',
   'workspace.pages': 'الصفحات',
   'workspace.allProjectFiles': 'كل ملفات المشروع',
   'workspace.newBlankPage': 'صفحة فارغة جديدة',

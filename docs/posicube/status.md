@@ -15,7 +15,7 @@ see "Verified by running it" below.
 | Generate a runnable React/Next project | working — verified against a live daemon |
 | A2UI spec authoring (hard-gated) | working — renderer, 30-block catalog, Zod gate, `/a2ui` route, authoring skill |
 | Pick enforcement at creation (`plain` / `minimal` / `a2ui`) | code complete — only `a2ui` has been exercised |
-| Live preview in the workspace | code complete — `ReactBuildPanel` renders for react-projects; not yet clicked through in the browser |
+| Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
 | Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
 
 Upstream moved again during that same session (`89d6d4ef2`, one commit past what
@@ -39,12 +39,39 @@ was spent. Each step below was observed, not inferred:
 | `/a2ui` renders the spec | HTTP 200; every visible string from `a2ui-spec.json` (`문의 접수`, `이메일`, `접수내역`, …) present in the SSR HTML; MUI `Table`/`TextField`/`Button`/`Card` classes emitted; zero `Unknown node type` diagnostics; only console error was a favicon 404 |
 | The gate really is hard | `validateSpec` **accepted** the shipped spec and **rejected** an off-catalog node type (`RawHtmlInjection`), a dangling `root` ref, and a missing `version` |
 
-**Still not verified — and it is the important one:** whether a *real* agent
-emits a catalog-valid spec, or drifts. Mock agents replay recorded traces, so
-they cannot answer this. That is now "Next #1".
+### The first real-agent run (2026-07-30) — one finding that matters
 
-Also unexercised: the `plain` and `minimal` variants, the `react/build` path,
-and `ReactBuildPanel` in an actual browser session.
+Asked for a signup screen, a real agent produced a working A2UI screen. It also
+**edited `src/authoring/catalog.ts` and `src/blocks/form.tsx`**, adding a
+`password` field type plus `minLength` and `matchField`.
+
+The gate did not fail; it was **moved**. `validateSpec` checks a spec against the
+catalog, so once the catalog is edited the spec passes *by construction*. D5's
+"pass/fail is decided mechanically" has a hole: the mechanism's own definition sat
+inside the agent's writable workspace.
+
+Fair to the agent: its *diagnosis* was right — a signup form genuinely cannot be
+expressed without a password field, and its implementation was good (consent-switch
+handling, cross-field match via `superRefine`, password masked in the success
+summary). What was wrong was the *action*. A catalog gap has to surface, not get
+patched locally, or nothing learns from it and every project's vocabulary drifts
+apart — the "screens vary by whoever built them" problem, one level up.
+
+Both halves are now fixed:
+
+- those three props ship in the seed catalog + form block, centrally
+- `design-templates/a2ui-spec/SKILL.md` marks `src/authoring/**`, `src/genui/**`
+  and `src/blocks/**` read-only, and tells the agent to report a gap instead of
+  widening the catalog
+
+**Still open:** first-attempt catalog-valid rate across repeated runs (status.md
+"Next #3"). One run is an anecdote; the drift mode it revealed is the thing worth
+measuring.
+
+Also unexercised: the `plain` and `minimal` variants, and the `react/build` path.
+(`react/build` cannot render an A2UI screen at all — `/a2ui` is `force-dynamic`,
+so it is a per-request read of `a2ui-spec.json`, not a static artifact. Build mode
+stays a plain-react-project affordance.)
 
 One claim in this file is still only *probably* true: seed **idempotency**. A
 second run on the same project did not visibly clobber anything — the spec
@@ -69,29 +96,29 @@ previewing it needs nothing from `robiflow`.
 
 ## Next
 
-### 1. Run it with a real agent (highest value)
+### 1. Measure drift across repeated runs (highest value)
 
-The infrastructure loop is verified (see above); what is **not** is the part
-only a real model can answer. Repeat the run without the mock overlay:
+One real-agent run is done (see above) and it already produced a finding. What is
+still missing is the *rate*.
 
 ```bash
 pnpm install     # if this is a fresh clone
 pnpm tools-dev
 ```
 
-Create a react-project with `variant = A2UI`, give it a real brief, and watch
-whether the agent's `a2ui-spec.json` passes `validateSpec` on the **first**
-attempt. The failure mode to look for is drift: reaching for a node type that
-is not in the 30-block catalog, or inventing prop shapes.
+Create A2UI screens from the same brief N≈10 times and record how often the
+agent's `a2ui-spec.json` passes `validateSpec` on the **first** attempt, with
+retries disabled — the retry loop converges by construction and would flatter the
+number. Two failure modes to separate:
 
-Record first-attempt pass rate — it is the input to #3. Do not let the retry
-loop mask it.
+- **in-vocabulary drift** — a hallucinated node `type` or an invented prop shape.
+  The gate catches this.
+- **contract editing** — reaching for `catalog.ts` / `spec-schema.ts` / a block to
+  make the spec fit. The skill now forbids it, so treat any recurrence as evidence
+  the instruction is not enough and a write guard is needed.
 
-Two smaller gaps from the same run:
-
-- the `plain` and `minimal` variants were never exercised — only `a2ui`
-- `ReactBuildPanel` was verified to render in code but never clicked through
-  in a browser, and `POST .../react/build` was never called
+Also still unexercised: the `plain` and `minimal` variants — only `a2ui` has been
+run end to end.
 
 ### 2. Build the design-rule linter (D5's missing half)
 

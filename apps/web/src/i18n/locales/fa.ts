@@ -4266,6 +4266,7 @@ export const fa: Dict = {
   'newproj.startFromLabel': 'شروع از',
   'newproj.startBlank': 'خالی',
   'newproj.startBlankHint': 'شروع از صفر',
+  'workspace.reactPreview': 'پیش‌نمایش',
   'workspace.pages': 'صفحه‌ها',
   'workspace.allProjectFiles': 'همه فایل‌های پروژه',
   'workspace.newBlankPage': 'صفحه خالی جدید',

@@ -63,7 +63,17 @@ const DEV_LABEL: Record<ReactDevStatus, string> = {
   failed: 'Failed',
 };
 
-export function ReactBuildPanel({ projectId }: { projectId: string }) {
+export function ReactBuildPanel({
+  projectId,
+  // Route the preview lands on, relative to the dev server / dist root. A plain
+  // react-project's deliverable is its `/` page, but an A2UI project's is the
+  // `/a2ui` route that reads `a2ui-spec.json` — showing `/` there previews the
+  // seed's stock dashboard and hides the screen the agent was asked to build.
+  previewPath = '',
+}: {
+  projectId: string;
+  previewPath?: string;
+}) {
   const [mode, setMode] = useState<Mode>('live');
   const [build, setBuild] = useState<ReactBuildState | null>(null);
   const [dev, setDev] = useState<ReactDevState | null>(null);
@@ -191,8 +201,14 @@ export function ReactBuildPanel({ projectId }: { projectId: string }) {
   // Resolve what the preview iframe should show for the active mode.
   let previewUrl: string | null = null;
   let placeholder: string | null = null;
+  // Live only. `dev.url` ends in `/`, so strip the leading slash rather than
+  // producing `//a2ui`. Build mode deliberately ignores previewPath: it serves
+  // `dist/index.html` (not a directory root, so appending would yield
+  // `index.htmla2ui`), and `/a2ui` is `force-dynamic` anyway — it reads
+  // `a2ui-spec.json` per request, so a static build cannot represent it.
+  const previewSuffix = previewPath.replace(/^\/+/, '');
   if (mode === 'live') {
-    if (devStatus === 'running' && dev?.url) previewUrl = dev.url;
+    if (devStatus === 'running' && dev?.url) previewUrl = dev.url + previewSuffix;
     else if (devStatus === 'failed') placeholder = dev?.error ?? 'Dev server failed to start.';
     else placeholder = DEV_LABEL[devStatus] + '…';
   } else {

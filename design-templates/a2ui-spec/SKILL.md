@@ -42,6 +42,36 @@ Use for a regular, structured admin/business screen (dashboard, form, list, deta
 2. **Flat adjacency list.** `nodes[]` is a flat array; parent→child is expressed by a node's `children: [childId, ...]`. The renderer walks from `root`.
 3. **Gate pass.** The spec must pass the Zod gate (`src/authoring/spec-schema.ts`): structure, id uniqueness, root exists, child-ref integrity, reachability, and per-node prop shapes. On failure, read the error, fix, retry (max 3).
 4. **Design system is authoritative.** Bind the active DESIGN.md tokens; do not invent colors/spacing/typography outside the Minimal palette.
+5. **The contract is read-only.** `a2ui-spec.json` is the ONLY file you write. These
+   are the gate's own definition and are off-limits — read them freely, never edit them:
+
+   - `src/authoring/catalog.ts` — the vocabulary you are being held to
+   - `src/authoring/spec-schema.ts` — the Zod gate itself
+   - `src/genui/**` — schema, renderer, registry
+   - `src/blocks/**` — the block implementations
+
+   Editing any of these does not make your spec valid; it moves the goalposts, so
+   the spec then passes *by construction* and the guarantee this path exists for
+   is gone. It also makes this project's vocabulary differ from every sibling
+   project — reintroducing exactly the per-author variance A2UI removes.
+
+## When the catalog cannot express the requirement
+
+This happens, and it is useful information — the catalog is incomplete, not you.
+Do **not** widen the catalog locally to get unblocked.
+
+Instead: build what the catalog *can* express, then state plainly what was missing
+and what you would have needed (a block type, a prop, a prop value). Use a
+`<question-form>` artifact if the user has to choose between fallbacks. The gap
+then gets fixed once, centrally, in the seed — where every project inherits it.
+
+A worked example of the failure mode: asked for a signup form, an earlier run
+found `Form.fields` had no `password` type and no way to require a confirmation
+match, so it added `password`, `minLength` and `matchField` to `catalog.ts` and
+implemented them in `blocks/form.tsx`. The diagnosis was correct and those props
+now ship in the seed — but they arrived as a silent local patch, so nothing else
+learned from it and that project's `Form` no longer matched any other project's.
+Reporting the gap would have produced the same fix, everywhere, visibly.
 
 ## Component vocabulary (from the ported registry)
 

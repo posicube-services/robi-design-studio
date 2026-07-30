@@ -4728,6 +4728,7 @@ export const zhCN: Dict = {
   "newproj.startFromLabel": "起点",
   "newproj.startBlank": "空白",
   "newproj.startBlankHint": "从零开始",
+  "workspace.reactPreview": "预览",
   "workspace.pages": "页面",
   "workspace.allProjectFiles": "全部项目文件",
   "workspace.newBlankPage": "新建空白页面",

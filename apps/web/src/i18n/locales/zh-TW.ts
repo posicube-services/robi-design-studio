@@ -4736,6 +4736,7 @@ export const zhTW: Dict = {
   "newproj.startFromLabel": "起點",
   "newproj.startBlank": "空白",
   "newproj.startBlankHint": "從零開始",
+  "workspace.reactPreview": "預覽",
   "workspace.pages": "頁面",
   "workspace.allProjectFiles": "全部專案檔案",
   "workspace.newBlankPage": "新增空白頁面",

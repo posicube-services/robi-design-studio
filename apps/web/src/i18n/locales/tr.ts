@@ -4271,6 +4271,7 @@ export const tr: Dict = {
   'newproj.startFromLabel': 'Başlangıç',
   'newproj.startBlank': 'Boş',
   'newproj.startBlankHint': 'Sıfırdan başla',
+  'workspace.reactPreview': 'Önizleme',
   'workspace.pages': 'Sayfalar',
   'workspace.allProjectFiles': 'Tüm proje dosyaları',
   'workspace.newBlankPage': 'Yeni boş sayfa',

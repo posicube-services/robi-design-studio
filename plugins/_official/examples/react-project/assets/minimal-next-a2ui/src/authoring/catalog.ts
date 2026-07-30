@@ -182,7 +182,7 @@ export const CATALOG: Catalog = {
           kind: 'json',
           required: true,
           description:
-            'array of { "name": string, "label": string, "type"?: "text"|"textarea"|"email"|"number"|"select"|"switch"|"date"|"file", "required"?: boolean, "placeholder"?: string, "options"?: [{ "value": string, "label": string }] } in display order. Use "textarea" for multi-line text (설명, 소개, 메모), "file" for a file/image upload picker.',
+            'array of { "name": string, "label": string, "type"?: "text"|"textarea"|"email"|"password"|"number"|"select"|"switch"|"date"|"file", "required"?: boolean, "placeholder"?: string, "minLength"?: number, "matchField"?: string, "options"?: [{ "value": string, "label": string }] } in display order. Use "textarea" for multi-line text (설명, 소개, 메모), "password" for masked secrets (submitted values are masked in the success summary), "file" for a file/image upload picker. "minLength" enforces a character minimum (비밀번호 8자 이상), "matchField" names another field this one must equal (비밀번호 확인), and a required "switch" is a consent toggle that must be turned on (약관 동의).',
         },
       },
     },

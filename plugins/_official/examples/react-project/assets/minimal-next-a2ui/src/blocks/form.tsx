@@ -36,7 +36,16 @@ import { mutationRegistry } from 'src/genui/mutation-registry';
  *   every bound block refreshes); without it, a local success summary only.
  * @posicube-minimal version=0.2.0
  */
-type FieldType = 'text' | 'textarea' | 'email' | 'number' | 'select' | 'switch' | 'date' | 'file';
+type FieldType =
+  | 'text'
+  | 'textarea'
+  | 'email'
+  | 'password'
+  | 'number'
+  | 'select'
+  | 'switch'
+  | 'date'
+  | 'file';
 
 type FieldDef = {
   name: string;
@@ -45,6 +54,10 @@ type FieldDef = {
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];
+  /** Minimum character count for string-backed fields (비밀번호 등). */
+  minLength?: number;
+  /** Name of another field this one must equal (비밀번호 확인). */
+  matchField?: string;
 };
 
 type FormValues = Record<string, unknown>;
@@ -56,7 +69,13 @@ function buildSchema(fields: FieldDef[]): z.ZodTypeAny {
     const type = field.type ?? 'text';
 
     if (type === 'switch') {
-      shape[field.name] = z.boolean().optional();
+      // A required switch is a consent toggle (약관 동의) — `false` must fail,
+      // so `.optional()` alone would silently let an unchecked box through.
+      shape[field.name] = field.required
+        // Consent labels are full sentences ("…에 동의합니다"), so the message
+        // must NOT interpolate the label — it would read twice.
+        ? z.boolean().refine((value) => value === true, { message: '동의가 필요합니다' })
+        : z.boolean().optional();
       continue;
     }
 
@@ -72,19 +91,48 @@ function buildSchema(fields: FieldDef[]): z.ZodTypeAny {
       continue;
     }
 
-    // text | email | select | date — all string-backed.
+    // text | email | password | select | date — all string-backed.
     if (field.required) {
       let rule = z.string().min(1, `${field.label}은(는) 필수입니다`);
       if (type === 'email') rule = rule.email('올바른 이메일 형식이 아닙니다');
+      if (field.minLength) {
+        rule = rule.min(field.minLength, `${field.label}은(는) ${field.minLength}자 이상이어야 합니다`);
+      }
       shape[field.name] = rule;
     } else if (type === 'email') {
       shape[field.name] = z.union([z.literal(''), z.string().email('올바른 이메일 형식이 아닙니다')]);
+    } else if (field.minLength) {
+      shape[field.name] = z.union([
+        z.literal(''),
+        z.string().min(field.minLength, `${field.label}은(는) ${field.minLength}자 이상이어야 합니다`),
+      ]);
     } else {
       shape[field.name] = z.string().optional();
     }
   }
 
-  return z.object(shape);
+  const object = z.object(shape);
+
+  // Cross-field rules (비밀번호 확인) can't live in the per-field shape — they
+  // need both values, so they run once on the whole object.
+  const matchRules = fields.filter((field) => field.matchField);
+  if (matchRules.length === 0) return object;
+
+  return object.superRefine((values, ctx) => {
+    for (const field of matchRules) {
+      const value = (values as FormValues)[field.name];
+      const other = (values as FormValues)[field.matchField as string];
+      // Empty is the "required" rule's business — don't double-report it.
+      if (value === '' || value === undefined) continue;
+      if (value !== other) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [field.name],
+          message: `${field.label}이(가) 일치하지 않습니다`,
+        });
+      }
+    }
+  });
 }
 
 function defaultValuesFor(fields: FieldDef[]): FormValues {
@@ -148,12 +196,18 @@ export function FormBlock({ node }: BlockProps) {
           <Divider />
         </>
       )}
-      <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
+      {/* A failed attempt clears the previous success banner — otherwise a stale
+          "제출됨" sits above fresh field errors and reads as a contradiction. */}
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit, () => setSubmitted(null))}
+        sx={{ p: 3 }}
+      >
         <Stack spacing={2.5} sx={{ maxWidth: 560 }}>
           {submitted && (
             <Alert severity="success" onClose={() => setSubmitted(null)}>
               {props.mutation ? '저장되었습니다: ' : '제출됨: '}
-              {summarize(submitted)}
+              {summarize(submitted, fields)}
             </Alert>
           )}
           {props.mutation && submitMutation.isError && (
@@ -198,13 +252,23 @@ function renderField(field: FieldDef, rhf: ControllerField, error?: string) {
   const type = field.type ?? 'text';
 
   if (type === 'switch') {
+    // A required switch can fail validation (약관 동의), so it needs the same
+    // visible error affordance the text inputs get — otherwise submit does
+    // nothing and the user has no idea why.
     return (
-      <FormControlLabel
-        control={
-          <Switch checked={Boolean(rhf.value)} onChange={(e) => rhf.onChange(e.target.checked)} />
-        }
-        label={field.label}
-      />
+      <FormControl error={Boolean(error)}>
+        <FormControlLabel
+          control={
+            <Switch checked={Boolean(rhf.value)} onChange={(e) => rhf.onChange(e.target.checked)} />
+          }
+          label={
+            <Typography variant="body2" sx={{ color: error ? 'error.main' : 'text.primary' }}>
+              {field.label}
+            </Typography>
+          }
+        />
+        {error && <FormHelperText sx={{ mx: 0 }}>{error}</FormHelperText>}
+      </FormControl>
     );
   }
 
@@ -261,10 +325,14 @@ function renderField(field: FieldDef, rhf: ControllerField, error?: string) {
     );
   }
 
+  const inputType =
+    type === 'number' || type === 'email' || type === 'password' || type === 'date' ? type : 'text';
+
   return (
     <TextField
       fullWidth
-      type={type === 'number' ? 'number' : type === 'email' ? 'email' : type === 'date' ? 'date' : 'text'}
+      type={inputType}
+      autoComplete={type === 'password' ? 'new-password' : undefined}
       multiline={type === 'textarea'}
       minRows={type === 'textarea' ? 3 : undefined}
       label={field.label}
@@ -279,9 +347,12 @@ function renderField(field: FieldDef, rhf: ControllerField, error?: string) {
   );
 }
 
-function summarize(values: FormValues): string {
+function summarize(values: FormValues, fields: FieldDef[]): string {
+  // Secrets must never land in a rendered summary — mask them by field type.
+  const secret = new Set(fields.filter((f) => f.type === 'password').map((f) => f.name));
+
   return Object.entries(values)
     .filter(([, value]) => value !== '' && value !== false && value != null)
-    .map(([key, value]) => `${key}=${String(value)}`)
+    .map(([key, value]) => `${key}=${secret.has(key) ? '••••••••' : String(value)}`)
     .join(', ');
 }

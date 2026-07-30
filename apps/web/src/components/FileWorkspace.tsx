@@ -348,6 +348,18 @@ function shouldKeepCurrentSketchState(
 
 export const DESIGN_FILES_TAB = '__design_files__';
 export const DESIGN_SYSTEM_TAB = '__design_system__';
+// posicube: react-project's deliverable is a running app, not a file, so the
+// live dev-server preview needs a home that does not depend on which source
+// file happens to be open. It gets its own root tab for the same reason
+// DESIGN_SYSTEM_TAB does: an earlier revision hung the preview off the main
+// viewer under `!activeFile || .html || dist/`, which meant the moment the
+// agent opened a `.tsx` it had just written — i.e. for the whole generation —
+// the pane fell through to FileViewer and tried to run a project module as a
+// standalone CDN-Babel artifact.
+export const REACT_PREVIEW_TAB = '__react_preview__';
+// The A2UI spec the agent writes at the project root. Its presence is how the
+// workspace tells an A2UI project from a plain react-project.
+const A2UI_SPEC_FILE = 'a2ui-spec.json';
 
 // Module-level default so a caller that omits `previewComments` doesn't mint
 // a fresh [] every render — that identity feeds the memoized FileViewer.
@@ -1269,7 +1281,14 @@ export function FileWorkspace({
     fileManagerViewedProjectRef.current = projectId;
     trackPageView(analytics.track, { page_name: 'file_manager' });
   }, [projectId, analytics.track]);
-  const defaultRootTab = designSystemProject ? DESIGN_SYSTEM_TAB : DESIGN_FILES_TAB;
+  const defaultRootTab = designSystemProject
+    ? DESIGN_SYSTEM_TAB
+    // posicube: land react-projects on the live preview so the app renders
+    // while the agent is still writing files, instead of only being visible
+    // after the fact.
+    : projectKind === 'react_project'
+      ? REACT_PREVIEW_TAB
+      : DESIGN_FILES_TAB;
   // Persisted tabs come from the parent. Active tab can transiently point
   // at a pending sketch — pending sketches are not in tabsState.tabs.
   const persistedTabs = tabsState.tabs;
@@ -1796,6 +1815,11 @@ export function FileWorkspace({
     if (
       activeTab === DESIGN_FILES_TAB
       || activeTab === DESIGN_SYSTEM_TAB
+      // posicube: a root tab, so it is deliberately absent from persistedTabs.
+      // Without this the `!includes(activeTab)` fallback below would swap the
+      // preview out for the last file tab every time the tab list changed —
+      // which is on every file the agent writes.
+      || activeTab === REACT_PREVIEW_TAB
     ) return;
     if (isBrowserTabId(activeTab)) {
       if (!browserTabs.some((tab) => tab.id === activeTab)) {
@@ -3420,6 +3444,23 @@ export function FileWorkspace({
               <span className="ws-tab-label">{t('dsManager.tabDesignSystem')}</span>
             </button>
           ) : null}
+          {projectKind === 'react_project' ? (
+            <button
+              type="button"
+              className={`ws-tab react-preview-tab ${activeTab === REACT_PREVIEW_TAB ? 'active' : ''}`}
+              role="tab"
+              aria-selected={activeTab === REACT_PREVIEW_TAB}
+              tabIndex={0}
+              data-testid="react-preview-tab"
+              onClick={() => setPersistedActive(REACT_PREVIEW_TAB)}
+              title={t('workspace.reactPreview')}
+            >
+              <span className="tab-icon" aria-hidden>
+                <Icon name="play" size={13} />
+              </span>
+              <span className="ws-tab-label">{t('workspace.reactPreview')}</span>
+            </button>
+          ) : null}
           <div className="ws-pages-menu-anchor" ref={pagesMenuRef} role="presentation">
             <button
               ref={pagesMenuButtonRef}
@@ -3672,6 +3713,24 @@ export function FileWorkspace({
             onConnectRepo={onConnectRepo}
             githubConnected={githubConnected}
           />
+        ) : activeTab === REACT_PREVIEW_TAB ? (
+          // posicube: the running app IS the deliverable for a react-project.
+          // ReactBuildPanel carries its own dev/build status and Restart, and
+          // it stays mounted regardless of which source file is open so the
+          // preview keeps rendering while the agent writes.
+          //
+          // The presence of `a2ui-spec.json` is what makes this an A2UI project:
+          // the spec is the deliverable and `/a2ui` is the route that renders it,
+          // so previewing `/` would show the seed's stock dashboard instead of
+          // the screen that was asked for. Detected from the file list rather
+          // than the run's `variant` input, because the input lives on the run
+          // and the workspace only ever sees the project.
+          <ReactBuildPanel
+            projectId={projectId}
+            previewPath={
+              visibleFiles.some((entry) => entry.name === A2UI_SPEC_FILE) ? '/a2ui' : ''
+            }
+          />
         ) : activeTab === DESIGN_FILES_TAB ? (
           <DesignFilesPanel
             key={projectId}
@@ -3856,14 +3915,6 @@ export function FileWorkspace({
             liveArtifactEvents={liveArtifactEvents}
             onRefreshArtifacts={onRefreshFiles}
           />
-        ) : projectKind === 'react_project'
-          && (!activeFile
-            || /\.html?$/i.test(activeFile.name)
-            || activeFile.name.startsWith('dist/')) ? (
-          // react-project: the deliverable is a running app, not a file, so the
-          // main viewer IS the live/build preview and it carries its own
-          // dev/build status. Source files still open in FileViewer below.
-          <ReactBuildPanel projectId={projectId} />
         ) : activeFile ? (
           <FileViewer
             projectId={projectId}

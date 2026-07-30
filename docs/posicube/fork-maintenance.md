@@ -40,11 +40,11 @@ The value of this fork is that it stays mergeable. As of the re-base:
 | Metric | Value |
 | --- | --- |
 | Files added (ours) | 1,211 |
-| Upstream files **modified** | 12 |
-| Lines in those modifications | **+257 / −2** |
+| Upstream files **modified** | 36 — of which **20 are i18n** |
+| Lines in those modifications | **+550 / −4** (i18n: +140, everything else: +410 / −4) |
 | Upstream files **deleted** | 0 |
 
-Measured 2026-07-28 with `git diff --numstat --diff-filter=M
+Measured 2026-07-30 with `git diff --numstat --diff-filter=M
 a7e205939..posicube-main`. Measure against **the upstream commit actually
 merged**, not `upstream/main` — that ref moves, and diffing a newer
 `upstream/main` makes upstream's own later edits look like deletions on our
@@ -53,6 +53,14 @@ side.
 Every modification is an *insertion at an existing extension point* — a union
 member, a switch case, one route registration, one JSX branch, a brand-token
 registration. No upstream logic was restructured.
+
+**Read the file count with the i18n split in mind.** 20 of the 36 are the 19
+locale files plus `i18n/types.ts`, and they are touched purely because
+`types.ts` is a typed `Dict`: every user-facing string we add costs 20 upstream
+file touches and cannot be avoided (a missing locale is a typecheck error, per
+the root `AGENTS.md`). They are pure key insertions and have never conflicted.
+The number that actually predicts merge pain is the **16 non-i18n files** —
+keep *that* small.
 
 **Preserve this property.** When a change appears to need upstream code
 reshaped, look for the extension point first; if there genuinely isn't one,
@@ -64,8 +72,13 @@ prefer adding a new file over reshaping an existing one.
 | --- | --- |
 | `apps/daemon/src/server.ts` | register `registerReactBuildRoutes`, beside the existing `registerBrandRoutes` call |
 | `apps/daemon/src/routes/runs.ts` | seed a react-project before its first agent turn |
-| `apps/web/src/components/FileWorkspace.tsx` | render `ReactBuildPanel` for react-projects |
+| `apps/web/src/components/FileWorkspace.tsx` | `REACT_PREVIEW_TAB` — a root tab hosting `ReactBuildPanel`, plus its tab button, default-tab entry and one line in the persisted-tab fallback guard |
+| `apps/web/src/components/FileViewer.tsx` | skip upstream's single-file `react-component` Babel renderer for react-projects (see below) |
+| `apps/web/src/components/HomeHero.tsx` | 3 chip-description cases |
+| `apps/web/src/components/home-hero/chips.ts` | the 3 react-project chips + their slots in `CREATE_RAIL_ORDER` |
+| `apps/web/src/components/home-hero/chip-labels.ts` | 3 chip-label cases |
 | `apps/web/src/providers/daemon.ts` | react build/dev API client (+114, append-only) |
+| `apps/web/src/i18n/types.ts` + 19 `locales/*.ts` | 7 keys × 20 files — chip labels/descriptions and the preview tab label |
 | `packages/contracts/src/index.ts` | export `api/react.js` (1 line) |
 | `packages/contracts/src/api/projects.ts` | `ProjectKind` gains `'react-project'` |
 | `packages/contracts/src/plugins/scenario-defaults.ts` | bind that kind to the `example-react-project` scenario |
@@ -74,6 +87,25 @@ prefer adding a new file over reshaping an existing one.
 | `packages/contracts/src/design-systems/token-schema.ts` | register `mui-minimal`'s tokens with upstream's token guard |
 | `CLAUDE.md` | append the pointer to `docs/posicube/` (upstream's content untouched above it) |
 | `.gitignore` | ignore `.omc/` and `.serena/` agent scratch; appended in a trailing posicube block so upstream's future appends land above ours |
+
+### Why the react-project preview needs two of those touches
+
+Upstream has one JSX preview path, `react-component`: a **self-contained** file,
+imports rewritten to CDN globals, transpiled by Babel standalone in a sandboxed
+iframe. A file inside a react-project is the opposite — a module of a real
+multi-file app whose imports its own bundler resolves. Sending one down that path
+produces nonsense; `import { z } from 'zod'` came out as `const { z } from 'zod'`
+and the pane showed a SyntaxError instead of the screen. So `FileViewer` skips
+that renderer for `react_project` (source view instead), and `FileWorkspace` hosts
+the real preview — the dev server — on its own root tab.
+
+The root tab matters more than it looks. An earlier revision hung the preview off
+the main viewer under `!activeFile || .html || dist/`, which meant that the moment
+the agent opened a `.tsx` it had just written — i.e. for the entire generation, the
+one time you most want to watch the app — the pane fell through to `FileViewer`.
+The predecessor repo had this right with a dedicated tab; the re-base narrowed it
+and lost the behaviour without recording the loss. If you find yourself gating the
+preview on which file is open, that is the same mistake.
 
 ## What we added
 

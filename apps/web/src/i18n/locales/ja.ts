@@ -4271,6 +4271,7 @@ export const ja: Dict = {
   'newproj.startFromLabel': '開始方法',
   'newproj.startBlank': '白紙',
   'newproj.startBlankHint': 'ゼロから作成',
+  'workspace.reactPreview': 'プレビュー',
   'workspace.pages': 'ページ',
   'workspace.allProjectFiles': 'プロジェクトの全ファイル',
   'workspace.newBlankPage': '新しい空白ページ',
