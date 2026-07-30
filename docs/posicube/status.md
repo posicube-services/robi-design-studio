@@ -1,6 +1,6 @@
 # Status and next steps
 
-_Last updated: 2026-07-28._
+_Last updated: 2026-07-30._
 
 ## Where we are
 
@@ -17,7 +17,8 @@ see "Verified by running it" below.
 | Pick enforcement at creation (`plain` / `minimal` / `a2ui`) | code complete — only `a2ui` has been exercised |
 | Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
 | Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
-| A2UI on shadcn + Tailwind (`a2ui-shadcn`) | seed complete — all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged. Not yet run with a real agent. |
+| A2UI on shadcn + Tailwind (`a2ui-shadcn`) | working — seed complete (all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged), and a real agent produced a gate-valid spec on its first attempt. It also duplicated the screen as React code — see below. |
+| Dark mode | out of scope by contract — 1 of 152 brands defines any dark construct (our own `mui-minimal`) |
 
 Upstream moved again during that same session (`89d6d4ef2`, one commit past what
 we merged). Nothing urgent; it is noted so the next sync starts from a known
@@ -68,6 +69,57 @@ Both halves are now fixed:
 **Still open:** first-attempt catalog-valid rate across repeated runs (status.md
 "Next #3"). One run is an anecdote; the drift mode it revealed is the thing worth
 measuring.
+
+### The first real-agent run on shadcn (2026-07-30) — passes the gate, but duplicates itself
+
+Same brief (signup screen), `a2ui-shadcn` variant, GitHub design system. The
+agent produced a **gate-valid spec on the first attempt**:
+
+| Checked | Result |
+| --- | --- |
+| `a2ui-spec.json` vs the seed placeholder | different — the agent wrote it |
+| Structure | 7 nodes, `Page → [PageHeader, Stack(Button×2), Divider, Form]` |
+| Node types | all inside the catalog |
+| `validateSpec` | `success: true` |
+| `src/authoring` / `src/genui` / `src/blocks` | untouched — the read-only boundary held |
+
+So the substrate works end to end with a real agent, and the previous run's
+contract-editing failure did **not** recur.
+
+The defect this run exposed is different: **the agent built the same screen
+twice.** Alongside the spec it wrote `src/app/signup/` and
+`src/components/signup/`, and pointed `src/app/page.tsx` at `/signup` with a
+redirect. Both implementations carry byte-identical copy, so which one a preview
+shows cannot be told apart by reading the files.
+
+That is two sources of truth for one screen. Editing the spec no longer changes
+what `/` serves, which is precisely the property D1 exists to provide.
+
+An earlier diagnosis in this file's history called this a *bypass* — "the agent
+never wrote a spec". That was measured mid-run, before the agent had written it,
+and is wrong. Check a finished run's files, not a running one's.
+
+The instruction layer was fixed for this (`SKILL.md` gained a "FIRST: which
+project am I in?" branch; the plugin query names `a2ui-spec.json` as the sole
+A2UI deliverable) but the fix is **not yet verified** — it needs one clean run
+that produces a spec and no `.tsx`.
+
+### Dark mode is out of scope, by contract
+
+Worth recording so it is not rediscovered as a bug: **1 of 152 design systems
+defines any dark-mode construct**, and that one is our own `mui-minimal`.
+`github/tokens.css` has no dark block; neither does `design-systems/shadcn`
+(which ships a `system/kit.dark.html` reference fixture without dark tokens). So
+every generated screen is light-only because that is all a brand declares.
+
+The MUI seed did define a full dark `colorScheme` of its own — the same pattern
+as the missing `secondary`/`info` tokens and the missing chart palette: MUI
+supplying what the token contract does not. The shadcn seed is light-only, so
+moving off MUI does drop that capability. Two ways to get it back, neither taken:
+derive a dark scheme from the light tokens (cheap, but a good dark theme is not
+an inversion — surfaces and contrast need re-deriving, so per-brand quality would
+be uneven), or add a dark layer to the token contract (152 brands, upstream-scale,
+but brand-authored and therefore correct).
 
 Also unexercised: the `plain` and `minimal` variants, and the `react/build` path.
 (`react/build` cannot render an A2UI screen at all — `/a2ui` is `force-dynamic`,
