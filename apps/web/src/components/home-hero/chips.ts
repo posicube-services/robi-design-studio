@@ -101,6 +101,81 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     // plugin to the composer.
     action: { kind: 'create-brand-kit' },
   },
+  // ---- posicube: the three react-project entry points -------------------
+  //
+  // All three dispatch to the same `example-react-project` scenario and differ
+  // only in the `framework` + `variant` inputs they seed. The daemon's seed
+  // materializer reads exactly those two to pick a scaffold (see
+  // `maybeMaterializeReactProjectSeed` in apps/daemon/src/routes/runs.ts).
+  //
+  // Three chips rather than one with dropdowns, because each combination is a
+  // different deliverable and the chip name can then say which one you get:
+  //
+  //   A2UI screen     → a validated JSON spec rendered at runtime (hard
+  //                     enforcement: fixed catalog + Zod gate). Next only.
+  //   Next.js project → a Next app: SSR, file routing, server data.
+  //   React project   → a Vite SPA: static output, no Node runtime needed.
+  //
+  // Pinning both inputs per chip is what removes the impossible combination
+  // (A2UI on Vite) from the home screen without needing per-chip filtering of
+  // the manifest's option lists.
+  //
+  // The seeded strings must match the manifest's `options` verbatim: the footer
+  // dropdown resolves the current value by matching an option, and the daemon
+  // sniffs the framework with /next/i and the variant with /a2ui/i on these
+  // same strings.
+  {
+    id: 'a2ui-screen',
+    label: 'A2UI screen',
+    icon: 'blocks',
+    group: 'create',
+    description: 'Spec-driven screens from a fixed catalog',
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-react-project',
+      projectKind: 'react-project',
+      // a2ui's renderer only exists as a Next route (`src/app/a2ui/page.tsx`),
+      // and there is no Vite twin of the a2ui seed — a Vite request degrades to
+      // plain `minimal` and stops being A2UI at all. Pin Next.js so this chip
+      // always delivers what its name claims.
+      inputs: {
+        framework: 'Next.js',
+        variant: 'A2UI (spec-driven, Next.js only)',
+      },
+    },
+  },
+  {
+    id: 'next-project',
+    label: 'Next.js project',
+    icon: 'layers-filled',
+    group: 'create',
+    description: 'Multi-file Next app with SSR and file routing',
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-react-project',
+      projectKind: 'react-project',
+      inputs: {
+        framework: 'Next.js',
+        variant: 'Minimal (MUI theme)',
+      },
+    },
+  },
+  {
+    id: 'react-project',
+    label: 'React project',
+    icon: 'file-code',
+    group: 'create',
+    description: 'Vite + React SPA you can deploy as static files',
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-react-project',
+      projectKind: 'react-project',
+      inputs: {
+        framework: 'Vite + React',
+        variant: 'Minimal (MUI theme)',
+      },
+    },
+  },
   {
     id: 'prototype',
     label: 'Prototype',
@@ -391,6 +466,18 @@ export function chipsForGroup(group: ChipGroup): HomeHeroChip[] {
 export const CREATE_RAIL_ORDER = [
   'web-clone',
   'deck',
+  // posicube: this fork's own deliverables, third onward. Chips absent from
+  // this list trail in catalog order, which is off-screen until the rail is
+  // scrolled — so a chip meant to be discoverable has to be listed here, not
+  // just added to HOME_HERO_CHIPS.
+  //
+  // Third rather than first on purpose: `HomeHero.scenario-cards.test.tsx`
+  // pins positions 0 and 1 to web-clone and deck, which is upstream's own
+  // product decision about what the rail leads with. Slotting in behind it
+  // keeps these three inside the first viewport without overriding that.
+  'a2ui-screen',
+  'next-project',
+  'react-project',
   'prototype',
   'wireframe',
   'mobile',
