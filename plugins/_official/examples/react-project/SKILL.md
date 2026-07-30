@@ -41,6 +41,54 @@ minimal components so the result looks cohesive and production-ready.
 > This is the one skill where the "single self-contained `index.html`" rule
 > does **not** apply. Write separate files.
 
+## FIRST: which project am I in?
+
+The `variant` input selects one of three different seeds, and they want different
+things from you. Decide by looking at the files, not by guessing — then read only
+the sections that apply.
+
+```bash
+ls src/authoring/catalog.ts src/theme 2>/dev/null; grep -l tailwindcss package.json
+```
+
+| What you find | Project | What you deliver |
+| --- | --- | --- |
+| `src/authoring/catalog.ts` exists | **A2UI** | `a2ui-spec.json` — **and nothing else** |
+| `src/theme/` + `@mui/material` | MUI Minimal | screens built from the minimal components |
+| `tailwindcss` in package.json, no `src/theme/` | shadcn + Tailwind | screens built from Tailwind utilities + brand tokens |
+
+### If this is an A2UI project — stop and read this
+
+**Your only deliverable is `a2ui-spec.json` at the project root.** It is a JSON
+spec — `{version, root, nodes[]}` — composed from the fixed block catalog. The
+`/a2ui` route validates it through a Zod gate and renders it. That spec, not
+code, is the screen.
+
+So, in an A2UI project:
+
+- **Do NOT write or edit any `.tsx`/`.ts`.** No new routes, no new components, no
+  editing `src/app/page.tsx`. Writing a React screen means you have built the
+  wrong thing — the run looks finished while `/a2ui` still shows the seed's
+  placeholder spec.
+- **Read `src/authoring/catalog.ts`** for the vocabulary: the node `type` values
+  you may emit and each one's declared props. Emitting a type that is not in the
+  catalog fails the gate.
+- **`src/authoring/**`, `src/genui/**` and `src/blocks/**` are read-only.** They
+  are the gate's own definition; editing them makes your spec pass by
+  construction and destroys the guarantee. If the catalog cannot express the
+  brief, say so plainly instead of widening it — that gap gets fixed once,
+  centrally, for every project.
+- Everything below about MUI components, `theme.palette` and component priority
+  **does not apply to you.** Skip it.
+
+### If this is the shadcn + Tailwind seed
+
+There is no `src/theme/`, no `src/layouts/`, and no MUI. Style with Tailwind
+utilities that resolve to the brand's tokens (`bg-surface`, `text-fg`,
+`bg-accent`, `rounded-md`, `text-sm`, …) — the active design system's
+`tokens.css` is wired in at `src/app/brand-tokens.css`, so those utilities follow
+the brand automatically. Do not add MUI, and do not hardcode hex.
+
 ## You start from a working app (do NOT re-scaffold)
 
 The daemon has already copied the seed for the selected framework into the
@@ -142,8 +190,12 @@ tree on disk is the deliverable; the user sees it in their panel.
 
 ## Hard rules
 
-- **Build on the seed; don't re-scaffold.** The minimal theme/components/layouts
-  are already there — reuse them.
+- **A2UI projects deliver a spec, not code.** If `src/authoring/catalog.ts`
+  exists, `a2ui-spec.json` is the only file you write, and
+  `src/authoring/**` / `src/genui/**` / `src/blocks/**` are read-only. See
+  "FIRST: which project am I in?" — the rest of these rules assume a code seed.
+- **Build on the seed; don't re-scaffold.** The seed's theme/components/layouts
+  (MUI seed) or brand tokens (shadcn seed) are already there — reuse them.
 - **Component priority ①②③.** Minimal component → MUI + theme → custom. Never
   reach for custom CSS when a catalog component or MUI base fits.
 - **One framework.** Match the selected framework's entry/routing; never mix
