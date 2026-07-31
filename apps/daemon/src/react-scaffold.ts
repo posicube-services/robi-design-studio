@@ -242,18 +242,36 @@ function renderMuiBrandTokens(css: string): string | null {
  */
 export async function resolveBrandTokensCss(
   designSystemId: string | null | undefined,
-  designSystemsDir: string,
-  userDesignSystemsDir: string,
+  designSystemsDir: string | undefined,
+  userDesignSystemsDir: string | undefined,
 ): Promise<string | undefined> {
   if (typeof designSystemId !== 'string' || designSystemId.length === 0) {
     return undefined;
   }
-  const assets = await resolveDesignSystemAssets(
-    designSystemId,
-    designSystemsDir,
-    userDesignSystemsDir,
-  );
-  return assets.tokensCss;
+  // Never let a brand problem stop a project from being seeded. This threw once
+  // — a caller passed roots its type promised but its object omitted, so
+  // `path.join(undefined, …)` blew up and took the whole materialize with it,
+  // leaving the agent to copy 400+ seed files by hand. An unbranded project is
+  // a cosmetic loss; an unseeded one is a broken run.
+  if (!designSystemsDir || !userDesignSystemsDir) {
+    console.warn(
+      `[react] design-system roots unavailable; skipping brand for ${designSystemId}`,
+    );
+    return undefined;
+  }
+  try {
+    const assets = await resolveDesignSystemAssets(
+      designSystemId,
+      designSystemsDir,
+      userDesignSystemsDir,
+    );
+    return assets.tokensCss;
+  } catch (err) {
+    console.warn(
+      `[react] could not resolve tokens for ${designSystemId}: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return undefined;
+  }
 }
 
 /**

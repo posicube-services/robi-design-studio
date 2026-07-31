@@ -13,7 +13,11 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { materializeReactScaffold, parseRootTokens } from '../src/react-scaffold.js';
+import {
+  materializeReactScaffold,
+  parseRootTokens,
+  resolveBrandTokensCss,
+} from '../src/react-scaffold.js';
 
 const SEED_DEFAULT_TOKENS = ':root { --accent: #2f6feb; }\n';
 const SLACK_TOKENS = ':root { --accent: #4a154b; }\n';
@@ -69,6 +73,28 @@ describe('parseRootTokens', () => {
       ':root { --bg: #ffffff; }\n:root[data-theme="dark"] { --bg: #141a21; }',
     );
     expect(tokens['--bg']).toBe('#ffffff');
+  });
+});
+
+// This is the shape of a real outage: `registerRunRoutes` was handed a `paths`
+// object that omitted the design-system roots even though its type declared
+// them, so resolution threw, the throw escaped into the seeding step, and NO
+// seed was written at all — the agent then hand-copied 400+ files.
+describe('resolveBrandTokensCss degrades instead of throwing', () => {
+  it('returns undefined when the roots are missing', async () => {
+    await expect(
+      resolveBrandTokensCss('slack', undefined, undefined),
+    ).resolves.toBeUndefined();
+  });
+
+  it('returns undefined for an unknown design system', async () => {
+    await expect(
+      resolveBrandTokensCss('no-such-brand', '/nonexistent', '/nonexistent'),
+    ).resolves.toBeUndefined();
+  });
+
+  it('returns undefined when no design system is selected', async () => {
+    await expect(resolveBrandTokensCss(null, '/a', '/b')).resolves.toBeUndefined();
   });
 });
 

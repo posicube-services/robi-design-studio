@@ -8470,7 +8470,7 @@ export async function startServer({
     db,
     design,
     http: httpDeps,
-    paths: { PROJECTS_DIR, RUNTIME_DATA_DIR },
+    paths: { PROJECTS_DIR, RUNTIME_DATA_DIR, DESIGN_SYSTEMS_DIR, USER_DESIGN_SYSTEMS_DIR },
     agents: { detectAgents, getAgentDef },
     chat: { startChatRun },
     lifecycle: { isDaemonShuttingDown: () => daemonShuttingDown },
