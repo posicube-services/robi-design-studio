@@ -793,7 +793,7 @@ export const zhTW: Dict = {
   "homeHero.confirmReplaceTitle": "取代目前的提示詞？",
   "homeHero.confirmReplaceBody": "使用 {title} 將取代目前輸入框中的文字。",
   "homeHero.confirmReplace": "取代",
-  "homeHero.chip.a2uiScreen": "A2UI 畫面",
+  "homeHero.chip.a2uiScreen": "A2UI 畫面 (MUI)",
   "homeHero.chip.a2uiShadcnScreen": "A2UI 畫面 (shadcn)",
   "homeHero.chip.nextProject": "Next.js 專案",
   "homeHero.chip.reactProject": "React 專案",

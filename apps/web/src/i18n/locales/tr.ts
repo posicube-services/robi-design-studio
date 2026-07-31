@@ -768,7 +768,7 @@ export const tr: Dict = {
   'homeHero.confirmReplaceTitle': 'Geçerli istem değiştirilsin mi?',
   'homeHero.confirmReplaceBody': '{title} kullanmak, girişte şu anda bulunan metni değiştirecek.',
   'homeHero.confirmReplace': 'Değiştir',
-  'homeHero.chip.a2uiScreen': 'A2UI ekranı',
+  'homeHero.chip.a2uiScreen': 'A2UI ekranı (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'A2UI ekranı (shadcn)',
   'homeHero.chip.nextProject': 'Next.js projesi',
   'homeHero.chip.reactProject': 'React projesi',

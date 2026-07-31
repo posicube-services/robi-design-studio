@@ -768,7 +768,7 @@ export const ja: Dict = {
   'homeHero.confirmReplaceTitle': '現在のプロンプトを置き換えますか？',
   'homeHero.confirmReplaceBody': '{title} を使用すると、入力欄の現在のテキストが置き換えられます。',
   'homeHero.confirmReplace': '置き換える',
-  'homeHero.chip.a2uiScreen': 'A2UI 画面',
+  'homeHero.chip.a2uiScreen': 'A2UI 画面 (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'A2UI 画面 (shadcn)',
   'homeHero.chip.nextProject': 'Next.js プロジェクト',
   'homeHero.chip.reactProject': 'React プロジェクト',

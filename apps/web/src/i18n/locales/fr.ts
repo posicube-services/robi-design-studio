@@ -768,7 +768,7 @@ export const fr: Dict = {
   'homeHero.confirmReplaceTitle': 'Remplacer le prompt actuel ?',
   'homeHero.confirmReplaceBody': 'Utiliser {title} remplacera le texte actuellement dans le champ.',
   'homeHero.confirmReplace': 'Remplacer',
-  'homeHero.chip.a2uiScreen': 'Écran A2UI',
+  'homeHero.chip.a2uiScreen': 'Écran A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'Écran A2UI (shadcn)',
   'homeHero.chip.nextProject': 'Projet Next.js',
   'homeHero.chip.reactProject': 'Projet React',

@@ -768,7 +768,7 @@ export const fa: Dict = {
   'homeHero.confirmReplaceTitle': 'دستور فعلی جایگزین شود؟',
   'homeHero.confirmReplaceBody': 'استفاده از {title} متنی را که اکنون در ورودی است جایگزین می‌کند.',
   'homeHero.confirmReplace': 'جایگزینی',
-  'homeHero.chip.a2uiScreen': 'صفحه A2UI',
+  'homeHero.chip.a2uiScreen': 'صفحه A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'صفحه A2UI (shadcn)',
   'homeHero.chip.nextProject': 'پروژه Next.js',
   'homeHero.chip.reactProject': 'پروژه React',

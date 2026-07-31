@@ -13,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { materializeReactScaffold } from '../src/react-scaffold.js';
+import { materializeReactScaffold, parseRootTokens } from '../src/react-scaffold.js';
 
 const SEED_DEFAULT_TOKENS = ':root { --accent: #2f6feb; }\n';
 const SLACK_TOKENS = ':root { --accent: #4a154b; }\n';
@@ -43,6 +43,33 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await rm(tmpDir, { recursive: true, force: true });
+});
+
+describe('parseRootTokens', () => {
+  it('reads declarations and strips the comments brands annotate them with', () => {
+    const tokens = parseRootTokens(
+      ':root {\n  /* ── Surface ── */\n  --bg: #ffffff;\n  --accent: #4a154b; /* aubergine */\n}',
+    );
+    expect(tokens['--bg']).toBe('#ffffff');
+    expect(tokens['--accent']).toBe('#4a154b');
+  });
+
+  // A section-header comment sits ABOVE the declaration it labels, so stripping
+  // comments only from the value side left the header glued to the next
+  // property name and dropped every annotated token on the floor.
+  it('does not let a leading comment swallow the property name', () => {
+    const tokens = parseRootTokens(':root {\n  /* header */\n  --accent: #abcdef;\n}');
+    expect(Object.keys(tokens)).toEqual(['--accent']);
+  });
+
+  // Exactly one of the 152 brands ships a dark block, in a second `:root`.
+  // Taking the last write would hand the light scheme dark values.
+  it('reads only the first :root block', () => {
+    const tokens = parseRootTokens(
+      ':root { --bg: #ffffff; }\n:root[data-theme="dark"] { --bg: #141a21; }',
+    );
+    expect(tokens['--bg']).toBe('#ffffff');
+  });
 });
 
 describe('materializeReactScaffold brand tokens', () => {
@@ -95,9 +122,36 @@ describe('materializeReactScaffold brand tokens', () => {
     expect(written).toBe(SEED_DEFAULT_TOKENS);
   });
 
-  // The MUI seeds take their palette from a JS theme and ship no
-  // `brand-tokens.css`; writing one would be dead weight the seed never imports.
-  it('is a no-op for a seed that does not consume tokens that way', async () => {
+  // The MUI seed reads the same tokens as values, because its theme does alpha
+  // math on them. Same injection point, different file.
+  it('rewrites the MUI seed token module with parsed values', async () => {
+    await writeSeed('minimal-next-a2ui', {
+      'package.json': '{"name":"seed"}',
+      'src/theme/brand-tokens.ts': 'export const brandTokens = { accent: "#00a76f" };\n',
+    });
+
+    const state = await materializeReactScaffold({
+      projectId: 'p4',
+      projectDir,
+      pluginAssetsRoot: assetsRoot,
+      framework: 'next',
+      variant: 'a2ui',
+      designSystemId: 'slack',
+      brandTokensCss: ':root {\n  /* Surface */\n  --accent: #4a154b;\n  --bg: #ffffff;\n}',
+    });
+
+    expect(state.brandTokensApplied).toBe('slack');
+    const written = await readFile(
+      path.join(projectDir, 'src', 'theme', 'brand-tokens.ts'),
+      'utf8',
+    );
+    expect(written).toContain('accent: "#4a154b"');
+    expect(written).toContain('bg: "#ffffff"');
+    expect(written).not.toContain('#00a76f');
+  });
+
+  // The plain starters have neither file; writing one would be dead weight.
+  it('is a no-op for a seed that consumes tokens neither way', async () => {
     await writeSeed('minimal-next', { 'package.json': '{"name":"seed"}' });
 
     const state = await materializeReactScaffold({

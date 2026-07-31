@@ -768,7 +768,7 @@ export const pl: Dict = {
   'homeHero.confirmReplaceTitle': 'Zastąpić bieżący prompt?',
   'homeHero.confirmReplaceBody': 'Użycie {title} zastąpi tekst znajdujący się obecnie w polu wprowadzania.',
   'homeHero.confirmReplace': 'Zastąp',
-  'homeHero.chip.a2uiScreen': 'Ekran A2UI',
+  'homeHero.chip.a2uiScreen': 'Ekran A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'Ekran A2UI (shadcn)',
   'homeHero.chip.nextProject': 'Projekt Next.js',
   'homeHero.chip.reactProject': 'Projekt React',

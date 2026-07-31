@@ -790,7 +790,7 @@ export const zhCN: Dict = {
   "homeHero.confirmReplaceTitle": "替换当前 Prompt？",
   "homeHero.confirmReplaceBody": "使用 {title} 会替换输入框中的现有文本。",
   "homeHero.confirmReplace": "替换",
-  "homeHero.chip.a2uiScreen": "A2UI 屏幕",
+  "homeHero.chip.a2uiScreen": "A2UI 屏幕 (MUI)",
   "homeHero.chip.a2uiShadcnScreen": "A2UI 屏幕 (shadcn)",
   "homeHero.chip.nextProject": "Next.js 项目",
   "homeHero.chip.reactProject": "React 项目",

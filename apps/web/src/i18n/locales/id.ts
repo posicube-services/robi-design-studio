@@ -768,7 +768,7 @@ export const id: Dict = {
   'homeHero.confirmReplaceTitle': 'Ganti prompt saat ini?',
   'homeHero.confirmReplaceBody': 'Menggunakan {title} akan mengganti teks yang ada di input saat ini.',
   'homeHero.confirmReplace': 'Ganti',
-  'homeHero.chip.a2uiScreen': 'Layar A2UI',
+  'homeHero.chip.a2uiScreen': 'Layar A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'Layar A2UI (shadcn)',
   'homeHero.chip.nextProject': 'Proyek Next.js',
   'homeHero.chip.reactProject': 'Proyek React',

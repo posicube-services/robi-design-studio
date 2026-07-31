@@ -768,7 +768,7 @@ export const esES: Dict = {
   'homeHero.confirmReplaceTitle': '¿Reemplazar el prompt actual?',
   'homeHero.confirmReplaceBody': 'Usar {title} reemplazará el texto que hay actualmente en la entrada.',
   'homeHero.confirmReplace': 'Reemplazar',
-  'homeHero.chip.a2uiScreen': 'Pantalla A2UI',
+  'homeHero.chip.a2uiScreen': 'Pantalla A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'Pantalla A2UI (shadcn)',
   'homeHero.chip.nextProject': 'Proyecto Next.js',
   'homeHero.chip.reactProject': 'Proyecto React',

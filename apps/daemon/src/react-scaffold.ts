@@ -146,6 +146,92 @@ export interface MaterializeReactScaffoldInput {
 const BRAND_TOKENS_REL = path.join('src', 'app', 'brand-tokens.css');
 
 /**
+ * The MUI seed's equivalent. It needs the same tokens as *values*, because its
+ * theme does alpha math on them (`createPaletteChannel`, `varAlpha`) and that
+ * cannot run on an unresolved `var(--accent)`.
+ */
+const BRAND_TOKENS_TS_REL = path.join('src', 'theme', 'brand-tokens.ts');
+
+/** OD token name → the field the MUI seed's `BrandTokens` calls it. */
+const MUI_TOKEN_FIELDS: ReadonlyArray<readonly [string, string]> = [
+  ['--accent', 'accent'],
+  ['--accent-on', 'accentOn'],
+  ['--accent-hover', 'accentHover'],
+  ['--accent-active', 'accentActive'],
+  ['--success', 'success'],
+  ['--warn', 'warn'],
+  ['--danger', 'danger'],
+  ['--bg', 'bg'],
+  ['--surface', 'surface'],
+  ['--surface-warm', 'surfaceWarm'],
+  ['--fg', 'fg'],
+  ['--fg-2', 'fg2'],
+  ['--font-body', 'fontBody'],
+  ['--font-display', 'fontDisplay'],
+  ['--radius-md', 'radiusMd'],
+];
+
+/**
+ * Read the custom properties a brand declares for light mode.
+ *
+ * Only the FIRST `:root` block is read. A brand that ships a dark block
+ * declares it in a later `:root` (or a media query) with the same property
+ * names, and taking the last write would hand the theme a dark palette for its
+ * light scheme. Exactly one of the 152 brands has such a block today, which is
+ * precisely why this is easy to get wrong and worth pinning.
+ */
+export function parseRootTokens(css: string): Record<string, string> {
+  const open = css.indexOf(':root');
+  if (open === -1) return {};
+  const brace = css.indexOf('{', open);
+  const end = css.indexOf('}', brace);
+  if (brace === -1 || end === -1) return {};
+  // Strip comments across the whole block before splitting. Brands annotate
+  // heavily and a comment sits either side of the semicolon — a section header
+  // above a declaration would otherwise be read as part of its property name.
+  const body = css.slice(brace + 1, end).replace(/\/\*[\s\S]*?\*\//g, '');
+  const out: Record<string, string> = {};
+  for (const decl of body.split(';')) {
+    const at = decl.indexOf(':');
+    if (at === -1) continue;
+    const name = decl.slice(0, at).trim();
+    if (!name.startsWith('--')) continue;
+    const value = decl.slice(at + 1).trim().replace(/\s+/g, ' ');
+    if (value.length > 0) out[name] = value;
+  }
+  return out;
+}
+
+/**
+ * Render the MUI seed's `brand-tokens.ts` from a brand's `tokens.css`.
+ *
+ * Returns null when the brand declares no `--accent`, which is the one token
+ * the palette cannot be built without — better to leave the seed's own
+ * defaults in place than to half-apply a brand.
+ */
+function renderMuiBrandTokens(css: string): string | null {
+  const tokens = parseRootTokens(css);
+  if (!tokens['--accent']) return null;
+  const lines: string[] = [];
+  for (const [token, field] of MUI_TOKEN_FIELDS) {
+    const value = tokens[token];
+    if (value === undefined) continue;
+    lines.push(`  ${field}: ${JSON.stringify(value)},`);
+  }
+  return [
+    '// Generated at scaffold time from the picked design system\'s tokens.css.',
+    '// Edit the design system, not this file — a re-scaffold overwrites it.',
+    '',
+    "import type { BrandTokens } from './brand-tokens-type';",
+    '',
+    'export const brandTokens: BrandTokens = {',
+    ...lines,
+    '};',
+    '',
+  ].join('\n');
+}
+
+/**
  * Resolve the active design system's `tokens.css` for `brandTokensCss`.
  *
  * Goes through the same seam the system prompt uses, so a generated project and
@@ -184,9 +270,16 @@ export async function resolveBrandTokensCss(
  * system's job (D4 — per-customer variation *is* the tokens), not something to
  * hope an agent notices, so it happens here, deterministically.
  *
- * Returns the design system id when applied, else null. A no-op when the seed
- * has no `brand-tokens.css` (the MUI seeds take their palette from a JS theme)
- * or the caller resolved no tokens.
+ * Two substrates read the brand two different ways, so this writes whichever
+ * the seed actually has:
+ *
+ *   - shadcn seed → `src/app/brand-tokens.css`, the tokens verbatim, consumed
+ *     as CSS custom properties by Tailwind utilities.
+ *   - MUI seed → `src/theme/brand-tokens.ts`, the same tokens parsed into
+ *     values, because that theme does alpha math they cannot stay symbolic for.
+ *
+ * Returns the design system id when either was written, else null — a seed with
+ * neither file (the plain starters) is a legitimate no-op.
  */
 async function applyBrandTokens(
   projectDir: string,
@@ -194,10 +287,24 @@ async function applyBrandTokens(
   brandTokensCss: string | null | undefined,
 ): Promise<string | null> {
   if (typeof brandTokensCss !== 'string' || brandTokensCss.length === 0) return null;
-  const target = path.join(projectDir, BRAND_TOKENS_REL);
-  if (!existsSync(target)) return null;
-  await writeFile(target, brandTokensCss, 'utf8');
-  return designSystemId ?? null;
+  let applied = false;
+
+  const cssTarget = path.join(projectDir, BRAND_TOKENS_REL);
+  if (existsSync(cssTarget)) {
+    await writeFile(cssTarget, brandTokensCss, 'utf8');
+    applied = true;
+  }
+
+  const tsTarget = path.join(projectDir, BRAND_TOKENS_TS_REL);
+  if (existsSync(tsTarget)) {
+    const rendered = renderMuiBrandTokens(brandTokensCss);
+    if (rendered) {
+      await writeFile(tsTarget, rendered, 'utf8');
+      applied = true;
+    }
+  }
+
+  return applied ? (designSystemId ?? null) : null;
 }
 
 function idleScaffoldState(

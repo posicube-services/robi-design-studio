@@ -768,7 +768,7 @@ export const th: Dict = {
   'homeHero.confirmReplaceTitle': 'แทนที่ prompt ปัจจุบันหรือไม่?',
   'homeHero.confirmReplaceBody': 'การใช้ {title} จะแทนที่ข้อความที่อยู่ในช่องป้อนข้อมูลในขณะนี้',
   'homeHero.confirmReplace': 'แทนที่',
-  'homeHero.chip.a2uiScreen': 'หน้าจอ A2UI',
+  'homeHero.chip.a2uiScreen': 'หน้าจอ A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'หน้าจอ A2UI (shadcn)',
   'homeHero.chip.nextProject': 'โปรเจกต์ Next.js',
   'homeHero.chip.reactProject': 'โปรเจกต์ React',

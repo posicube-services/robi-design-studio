@@ -768,7 +768,7 @@ export const ptBR: Dict = {
   'homeHero.confirmReplaceTitle': 'Substituir o prompt atual?',
   'homeHero.confirmReplaceBody': 'Usar {title} substituirá o texto que está atualmente no campo de entrada.',
   'homeHero.confirmReplace': 'Substituir',
-  'homeHero.chip.a2uiScreen': 'Tela A2UI',
+  'homeHero.chip.a2uiScreen': 'Tela A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'Tela A2UI (shadcn)',
   'homeHero.chip.nextProject': 'Projeto Next.js',
   'homeHero.chip.reactProject': 'Projeto React',

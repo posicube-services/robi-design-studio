@@ -768,7 +768,7 @@ export const uk: Dict = {
   'homeHero.confirmReplaceTitle': 'Замінити поточний запит?',
   'homeHero.confirmReplaceBody': 'Використання {title} замінить текст, який зараз є у полі введення.',
   'homeHero.confirmReplace': 'Замінити',
-  'homeHero.chip.a2uiScreen': 'Екран A2UI',
+  'homeHero.chip.a2uiScreen': 'Екран A2UI (MUI)',
   'homeHero.chip.a2uiShadcnScreen': 'Екран A2UI (shadcn)',
   'homeHero.chip.nextProject': 'Проєкт Next.js',
   'homeHero.chip.reactProject': 'Проєкт React',
