@@ -91,12 +91,21 @@ Enforcement is chosen at project creation:
 | variant | Vocabulary | Enforcement | Brand reaches the screen | Seed |
 | --- | --- | --- | --- | --- |
 | `plain` | none — agent writes what it likes | soft: active design system's `tokens.css` | yes, via `tokens.css` | `scaffold` / `scaffold-next` |
-| `minimal` | MUI Minimal component library | medium: components fixed, composition free | **no — no bridge yet** | `minimal-vite` / `minimal-next` |
+| `minimal` | MUI Minimal component library | medium: components fixed, composition free | yes, via the MUI token bridge | `minimal-vite` / `minimal-next` |
 | `a2ui` | MUI Minimal **+ fixed spec catalog** | hard: Zod gate | yes, via the MUI token bridge | `minimal-next-a2ui` |
 | `a2ui-shadcn` | shadcn + Tailwind v4 **+ the same catalog** | hard: the same Zod gate | yes, via Tailwind's `@theme` | `shadcn-next-a2ui` |
 
-The `minimal` row is the remaining gap: its seeds carry the same hardcoded
-`themeConfig` the a2ui one used to, and the bridge has not been ported to them.
+**Every variant now honours the picked design system.** The three MUI seeds share
+a byte-identical `src/theme`, so porting the bridge from the a2ui seed to the
+other two was four files copied and three edits repeated — no divergence to
+maintain.
+
+There is no shadcn Tier 2 (`minimal`-equivalent) seed, and adding one is a bigger
+job than it looks. Strip A2UI out of `shadcn-next-a2ui` and what remains is ~30
+files of which **`src/ui` is exactly one**: the substrate's richness there comes
+from the 31 blocks we wrote, not from shadcn. Making it a peer of MUI Minimal —
+24 components, layouts, 44 theme overrides — means owning a second component set.
+That is a product decision, not a port.
 
 ### Why two a2ui variants
 

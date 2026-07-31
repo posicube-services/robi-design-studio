@@ -301,3 +301,43 @@ describe('every bundled brand renders a usable token module', () => {
     expect(rendered).toBeGreaterThan(100);
   });
 });
+
+// The seeds grew up separately and name the same file three ways. Each one
+// carried a "replace this with the active design system's tokens.css" comment
+// and no executor, so a Next.js/React project came out unbranded even though a
+// brand was picked.
+describe('every seed that carries a CSS token file gets it written', () => {
+  const cases: Array<[string, string]> = [
+    ['shadcn-next-a2ui', 'src/app/brand-tokens.css'],
+    ['minimal-next', 'src/styles/tokens.css'],
+    ['minimal-vite', 'src/styles/tokens.css'],
+    ['scaffold-next', 'src/app/tokens.css'],
+  ];
+
+  for (const [seed, rel] of cases) {
+    it(`writes ${rel} for ${seed}`, async () => {
+      await writeSeed(seed, {
+        'package.json': '{"name":"seed"}',
+        [rel]: SEED_DEFAULT_TOKENS,
+      });
+
+      const variant = seed.includes('shadcn')
+        ? 'a2ui-shadcn'
+        : seed.startsWith('scaffold')
+          ? 'plain'
+          : 'minimal';
+      const state = await materializeReactScaffold({
+        projectId: `css-${seed}`,
+        projectDir,
+        pluginAssetsRoot: assetsRoot,
+        framework: seed.includes('vite') ? 'vite' : 'next',
+        variant,
+        designSystemId: 'slack',
+        brandTokensCss: SLACK_TOKENS,
+      });
+
+      expect(state.brandTokensApplied).toBe('slack');
+      expect(await readFile(path.join(projectDir, rel), 'utf8')).toBe(SLACK_TOKENS);
+    });
+  }
+});

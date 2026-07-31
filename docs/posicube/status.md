@@ -160,9 +160,47 @@ The chip is now `A2UI 화면 (MUI)` in all 19 locales, and both chip description
 name their substrate — "styled by the design system" stopped being a
 differentiator the moment both were.
 
-**Still unverified in a browser:** neither substrate has been eyeballed with a
-non-default brand since the fix. The API-level evidence above is real but it is
-not a rendered screen.
+Confirmed in the browser: `A2UI 화면 (MUI)` + Slack renders in Slack's aubergine.
+
+Two defects surfaced between the API-level check and that screen, both worth
+keeping:
+
+- **Brands do not all write plain hex.** Across the 152 packs the colour slots
+  hold 1394 hex, **219 `color-mix()`**, **48 `var()` aliases** and 19
+  rgb/hsl/oklch. Slack's `--surface-warm: var(--surface)` reached
+  `createPaletteChannel` verbatim and killed the theme at module evaluation with
+  `Invalid hex color: var(--surface)`. `var()` chains are now followed to their
+  literal, rgb/hsl pass through, and anything MUI cannot parse is omitted so the
+  seed derives that step — which for the color-mix pressed states is close to
+  right anyway. A sweep over every bundled brand pins it; a sample would have
+  missed this, since the syntax varies pack by pack.
+- **Omitting a field means the generated module is no longer a complete
+  `BrandTokens`**, so the defaults moved to their own never-generated file and
+  the generated one spreads them.
+
+### Every variant now wears the brand (2026-07-31)
+
+The bridge was ported from the a2ui seed to `minimal-next` and `minimal-vite`,
+and the injector learned the other two filenames seeds use for the same job.
+
+| Seed | Brand file | Was it written before? |
+| --- | --- | --- |
+| `shadcn-next-a2ui` | `src/app/brand-tokens.css` | yes |
+| `minimal-next-a2ui` | `src/theme/brand-tokens.ts` + `src/styles/tokens.css` | the `.ts` only |
+| `minimal-next` / `minimal-vite` | same pair | **no** |
+| `scaffold-next` | `src/app/tokens.css` | **no** |
+| `scaffold` | `src/styles/tokens.css` | **no** |
+
+Every one of those CSS files carried the same "replace this with the active
+design system's tokens.css verbatim" comment and had no executor — the original
+defect, repeated per seed under three different filenames. The three MUI seeds
+share a byte-identical `src/theme`, so the port was four files copied plus three
+edits repeated, with no divergence left behind.
+
+Not done: a shadcn Tier 2 seed. See `architecture-decisions.md` — without A2UI
+that seed is ~30 files with a single component file, so making it a peer of MUI
+Minimal means owning a second component set, which is a product decision rather
+than a port.
 
 ### Dark mode is out of scope, by contract
 

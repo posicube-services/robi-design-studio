@@ -142,8 +142,24 @@ export interface MaterializeReactScaffoldInput {
   brandTokensCss?: string | null | undefined;
 }
 
-/** The one file a token-consuming seed changes when the brand changes. */
-const BRAND_TOKENS_REL = path.join('src', 'app', 'brand-tokens.css');
+/**
+ * The CSS files a seed changes when the brand changes, each holding the active
+ * design system's `:root` block verbatim.
+ *
+ * Three names for the same job, because the seeds grew up separately: the
+ * shadcn seed's Tailwind bridge reads `brand-tokens.css`, the MUI seeds carry a
+ * `styles/tokens.css` for whatever raw CSS gets written alongside the theme,
+ * and the Next plain starter puts it under `app/`. Every one of them documents
+ * "replace this with the active design system's tokens.css verbatim" in a
+ * comment, and until this list existed none of them had an executor. Writing
+ * whichever are present beats making the seeds agree on a filename, which would
+ * be churn for its own sake.
+ */
+const BRAND_TOKENS_CSS_RELS = [
+  path.join('src', 'app', 'brand-tokens.css'),
+  path.join('src', 'styles', 'tokens.css'),
+  path.join('src', 'app', 'tokens.css'),
+];
 
 /**
  * The MUI seed's equivalent. It needs the same tokens as *values*, because its
@@ -355,8 +371,9 @@ async function applyBrandTokens(
   if (typeof brandTokensCss !== 'string' || brandTokensCss.length === 0) return null;
   let applied = false;
 
-  const cssTarget = path.join(projectDir, BRAND_TOKENS_REL);
-  if (existsSync(cssTarget)) {
+  for (const rel of BRAND_TOKENS_CSS_RELS) {
+    const cssTarget = path.join(projectDir, rel);
+    if (!existsSync(cssTarget)) continue;
     await writeFile(cssTarget, brandTokensCss, 'utf8');
     applied = true;
   }

@@ -10,6 +10,7 @@ import { varAlpha, createPaletteChannel } from 'minimal-shared/utils';
 
 import { opacity } from './opacity';
 import { themeConfig } from '../theme-config';
+import { brandTokens } from '../brand-tokens';
 
 // ----------------------------------------------------------------------
 
@@ -96,13 +97,25 @@ export const grey = createPaletteChannel(themeConfig.palette.grey);
  * ➤ ➤ Text, background, action
  * ➤
  */
+// Ink and surfaces come from the active design system; `disabled` stays on the
+// neutral ramp because the token contract has no token for it. Dark mode keeps
+// Minimal's own values — 151 of 152 brands declare no dark block at all, so
+// there is nothing to read there.
 export const text = {
-  light: createPaletteChannel({ primary: grey[800], secondary: grey[600], disabled: grey[500] }),
+  light: createPaletteChannel({
+    primary: brandTokens.fg,
+    secondary: brandTokens.fg2,
+    disabled: grey[500],
+  }),
   dark: createPaletteChannel({ primary: '#FFFFFF', secondary: grey[500], disabled: grey[600] }),
 };
 
 export const background = {
-  light: createPaletteChannel({ paper: '#FFFFFF', default: '#FFFFFF', neutral: grey[200] }),
+  light: createPaletteChannel({
+    paper: brandTokens.surface,
+    default: brandTokens.bg,
+    neutral: brandTokens.surfaceWarm ?? grey[200],
+  }),
   dark: createPaletteChannel({ paper: grey[800], default: grey[900], neutral: '#28323D' }),
 };
 

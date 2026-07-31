@@ -16,6 +16,8 @@ import { typography } from './core/typography';
 import { customShadows } from './core/custom-shadows';
 import { applySettingsToTheme, applySettingsToComponents } from './with-settings';
 
+import { brandBorderRadius } from './brand-bridge';
+
 // ----------------------------------------------------------------------
 
 export const baseTheme: ThemeOptions = {
@@ -36,7 +38,7 @@ export const baseTheme: ThemeOptions = {
   mixins,
   components,
   typography,
-  shape: { borderRadius: 8 },
+  shape: { borderRadius: brandBorderRadius() },
   direction: themeConfig.direction,
   cssVariables: themeConfig.cssVariables,
 };
