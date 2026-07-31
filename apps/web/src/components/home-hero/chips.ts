@@ -515,6 +515,10 @@ export const CREATE_RAIL_ORDER = [
   'image',
   'video',
   'audio',
+  // Upstream's own trailing chip. Listing it explicitly is what keeps it ahead
+  // of the posicube block below — unlisted chips append after every listed one,
+  // so leaving it out would put upstream's chip last instead of ours.
+  'create-brand-kit',
   // posicube: this fork's own deliverables, last. Upstream's catalogue leads;
   // ours are the newer additions and trail it.
   //
