@@ -505,19 +505,6 @@ export function chipsForGroup(group: ChipGroup): HomeHeroChip[] {
 export const CREATE_RAIL_ORDER = [
   'web-clone',
   'deck',
-  // posicube: this fork's own deliverables, third onward. Chips absent from
-  // this list trail in catalog order, which is off-screen until the rail is
-  // scrolled — so a chip meant to be discoverable has to be listed here, not
-  // just added to HOME_HERO_CHIPS.
-  //
-  // Third rather than first on purpose: `HomeHero.scenario-cards.test.tsx`
-  // pins positions 0 and 1 to web-clone and deck, which is upstream's own
-  // product decision about what the rail leads with. Slotting in behind it
-  // keeps these three inside the first viewport without overriding that.
-  'a2ui-screen',
-  'a2ui-shadcn-screen',
-  'next-project',
-  'react-project',
   'prototype',
   'wireframe',
   'mobile',
@@ -528,6 +515,19 @@ export const CREATE_RAIL_ORDER = [
   'image',
   'video',
   'audio',
+  // posicube: this fork's own deliverables, last. Upstream's catalogue leads;
+  // ours are the newer additions and trail it.
+  //
+  // Being listed at all is the point: chips absent from this array fall back to
+  // catalog order, so a chip meant to be reachable has to appear here, not just
+  // in HOME_HERO_CHIPS. Trailing means the rail must be scrolled to reach them
+  // — deliberate, but it is why the labels carry their substrate in parentheses
+  // (`A2UI 화면 (shadcn)`): once a chip is off the first viewport, its name is
+  // the only thing distinguishing it from its neighbour.
+  'a2ui-screen',
+  'a2ui-shadcn-screen',
+  'next-project',
+  'react-project',
 ] as const;
 
 // Chip ids the onboarding "build a design system" teaser intentionally omits.
