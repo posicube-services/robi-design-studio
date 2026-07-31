@@ -1,6 +1,6 @@
 # Status and next steps
 
-_Last updated: 2026-07-30._
+_Last updated: 2026-07-31._
 
 ## Where we are
 
@@ -17,7 +17,9 @@ see "Verified by running it" below.
 | Pick enforcement at creation (`plain` / `minimal` / `a2ui`) | code complete — only `a2ui` has been exercised |
 | Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
 | Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
+| Brand tokens reach a generated project | working — the scaffolder writes them on both the run and CLI paths; verified on a live daemon, not yet eyeballed in a browser |
 | A2UI on shadcn + Tailwind (`a2ui-shadcn`) | working — seed complete (all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged), and a real agent produced a gate-valid spec on its first attempt. It also duplicated the screen as React code — see below. |
+| A2UI on MUI Minimal (`a2ui`) | working — the token bridge lands the picked brand on MUI's theme; `minimal`/`plain` MUI seeds still lack it |
 | Dark mode | out of scope by contract — 1 of 152 brands defines any dark construct (our own `mui-minimal`) |
 
 Upstream moved again during that same session (`89d6d4ef2`, one commit past what
@@ -114,6 +116,53 @@ second run on the same project did not visibly clobber anything — the spec
 survived and the dev server kept serving — but the `[react] materialized …`
 daemon log line was not captured, so the skip branch was never positively
 observed. Confirm it with a deliberate edit-then-rerun before trusting it.
+
+### Brands did not reach generated projects at all (2026-07-31)
+
+Picking Slack produced the seed's default blue. **Nothing in the pipeline ever
+wrote a brand into a generated project** — the seeds' `globals.css` documents
+brand application as "replace `brand-tokens.css` with that brand's `tokens.css`
+verbatim", and that instruction had no executor. The agent sometimes read the
+comment and did the copy itself, which is why GitHub *looked* applied; tightening
+the A2UI instruction to "the spec is your only deliverable" removed that accident
+and left every project unbranded.
+
+Fixed by making it the system's job (D4): the scaffolder writes the tokens, on
+both the run path and `POST /api/projects/:id/react/scaffold` (+ `od react
+scaffold`), resolved through the same design-system seam the system prompt uses
+so a project and its prompt cannot disagree about the active brand.
+
+Three defects surfaced on the way, each worth remembering:
+
+- **A comment above a declaration ate the property name.** Stripping `/* … */`
+  only from the value side left a section header glued to the next `--token`, so
+  every annotated declaration was dropped — which is most of them.
+- **An omitted token arrived as `''`, not `undefined`**, so `??` happily used it
+  and MUI got a blank colour.
+- **Brand resolution sat in front of the seed copy and threw.** `registerRunRoutes`
+  was handed a `paths` object missing the design-system roots its *type*
+  declared, so `path.join(undefined, …)` blew up and took the whole materialize
+  down: no seed at all, and the agent hand-copied 400+ files. Resolution is now
+  non-fatal. An unbranded project is cosmetic; an unseeded one is a broken run.
+
+Verified on a live daemon: `[react] materialized 425 next/a2ui seed files …
+(brand: slack)`, and the project's `brand-tokens.ts` carried `#4a154b`.
+
+### The MUI A2UI seed now wears the design system too (2026-07-31)
+
+`a2ui` used to ignore the brand by construction — the defect that motivated
+`a2ui-shadcn`. It no longer does; see "The MUI token bridge" in
+`architecture-decisions.md` for the mapping and its limits. The acceptance test
+is a round trip: `mui-minimal` was extracted *from* this theme, so feeding it
+back returns the theme's own colours exactly wherever a token backs the step.
+
+The chip is now `A2UI 화면 (MUI)` in all 19 locales, and both chip descriptions
+name their substrate — "styled by the design system" stopped being a
+differentiator the moment both were.
+
+**Still unverified in a browser:** neither substrate has been eyeballed with a
+non-default brand since the fix. The API-level evidence above is real but it is
+not a rendered screen.
 
 ### Dark mode is out of scope, by contract
 

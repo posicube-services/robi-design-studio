@@ -88,21 +88,28 @@ Two axes were being conflated and had to be separated:
 
 Enforcement is chosen at project creation:
 
-| variant | Vocabulary | Enforcement | Seed |
-| --- | --- | --- | --- |
-| `plain` | none — agent writes what it likes | soft: active design system's `tokens.css` | `scaffold` / `scaffold-next` |
-| `minimal` | MUI Minimal component library | medium: components fixed, composition free | `minimal-vite` / `minimal-next` |
-| `a2ui` | MUI Minimal **+ fixed spec catalog** | hard: Zod gate | `minimal-next-a2ui` |
-| `a2ui-shadcn` | shadcn + Tailwind v4 **+ the same catalog** | hard: the same Zod gate | `shadcn-next-a2ui` |
+| variant | Vocabulary | Enforcement | Brand reaches the screen | Seed |
+| --- | --- | --- | --- | --- |
+| `plain` | none — agent writes what it likes | soft: active design system's `tokens.css` | yes, via `tokens.css` | `scaffold` / `scaffold-next` |
+| `minimal` | MUI Minimal component library | medium: components fixed, composition free | **no — no bridge yet** | `minimal-vite` / `minimal-next` |
+| `a2ui` | MUI Minimal **+ fixed spec catalog** | hard: Zod gate | yes, via the MUI token bridge | `minimal-next-a2ui` |
+| `a2ui-shadcn` | shadcn + Tailwind v4 **+ the same catalog** | hard: the same Zod gate | yes, via Tailwind's `@theme` | `shadcn-next-a2ui` |
+
+The `minimal` row is the remaining gap: its seeds carry the same hardcoded
+`themeConfig` the a2ui one used to, and the bridge has not been ported to them.
 
 ### Why two a2ui variants
 
-`a2ui-shadcn` is the same contract on a different substrate, and it exists because
-of a defect in `a2ui`: **the design system does not reach the screen.** MUI takes
-its colour, type and radius from a hardcoded JS theme (`themeConfig`), so picking
-Airbnb or Stripe changes nothing. The seed's own `tokens.css` admits it —
-*"additive and intentionally neutral: it does NOT override the MUI theme"*. That
-contradicts D4, which promises design tokens are exactly what varies per customer.
+`a2ui-shadcn` is the same contract on a different substrate. It exists because of
+a defect in `a2ui` that has since been fixed: **the design system did not reach
+the screen.** MUI took its colour, type and radius from a hardcoded JS theme
+(`themeConfig`), so picking Airbnb or Stripe changed nothing — a direct
+contradiction of D4, which promises design tokens are exactly what varies per
+customer.
+
+**Both substrates now honour the design system** (see "The MUI token bridge"
+below), so the choice between them is a real one — component library and styling
+model — rather than "the one that works and the one that doesn't".
 
 Tailwind fixes it for free rather than by construction: **150 of the 152 design
 systems already ship a `tailwind-v4.css`** that maps their tokens onto Tailwind's
@@ -128,9 +135,46 @@ Two gaps the port surfaced, both pre-existing and previously masked by MUI:
 - A multi-series chart had no palette to draw from, for the same reason. Same
   technique, verified legible across all three test brands.
 
-`a2ui` stays until `a2ui-shadcn` has been exercised on real work. Keeping both is
-what makes the migration reversible; the seeds are selected by a `variant` value,
-so coexistence needed no new machinery.
+### The MUI token bridge
+
+`themeConfig` turned out to be the whole contact surface. All eight palette
+entries resolve through it, **none of the 44 component overrides hardcodes a
+hex**, and `custom-shadows` derives from the palette — so replacing that one
+object re-colours the entire system, shadows included.
+
+| Where the brand lands | How |
+| --- | --- |
+| `src/theme/brand-tokens.ts` | the daemon writes it at scaffold time, parsed from the picked brand's `tokens.css` — the same moment the shadcn seed gets its `brand-tokens.css`. One injection point, two substrates. |
+| `themeConfig.palette` | `brandPalette()` in `src/theme/brand-bridge.ts` |
+| `themeConfig.fontFamily` | `--font-body` / `--font-display` |
+| `shape.borderRadius` | `--radius-md` |
+| `text` / `background` in `core/palette.ts` | `--fg --fg-2 --bg --surface --surface-warm` |
+
+Values, not `var(--accent)`: the theme does alpha math (`createPaletteChannel`,
+`varAlpha`) that cannot run on an unresolved custom property.
+
+MUI wants a five-step ramp per colour where the contract guarantees a point, so
+`main`/`dark`/`darker`/`contrastText` come from tokens where the brand declares
+them and the two light steps are derived. **Derived steps approximate rather than
+reproduce a hand-tuned ramp** — round-tripping `mui-minimal` returns its exact
+main/dark/darker/contrastText and its `light`/`lighter` only close. That round
+trip is the acceptance test (`e2e/tests/react-seed-brand-bridge.test.ts`): the
+brand pack was extracted *from* this theme, so feeding it back has to return the
+theme's own colours.
+
+`secondary` and `info` have no token at all, exactly as on shadcn, and are
+rotated off the accent's hue by the same technique.
+
+What still does not follow the brand: the neutral grey ramp, Minimal's spacing
+rhythm, and the component silhouettes its 44 overrides define. A Slack-branded
+Minimal is Slack's colour, type and radius on Minimal's craft — a legitimate
+product, but not the same promise as shadcn, where the blocks read tokens
+directly and a brand switch changes the screen's shape too.
+
+`a2ui` stays because it is now a real alternative rather than a broken cell.
+The seeds are selected by a `variant` value, so coexistence needed no new
+machinery. Two byte-identical copies of the catalog remain a drift risk — see
+`status.md`.
 
 `a2ui`'s renderer is a Next app, so there is no Vite twin — a Vite request
 degrades to `minimal` and reports the variant it actually got, rather than
