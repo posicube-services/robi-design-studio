@@ -35,7 +35,10 @@ import type {
   ReactScaffoldVariant,
 } from '@open-design/contracts';
 import { getInstalledPlugin } from './plugins/registry.js';
-import { materializeReactScaffold } from './react-scaffold.js';
+import {
+  materializeReactScaffold,
+  resolveBrandTokensCss,
+} from './react-scaffold.js';
 
 // The bundled scenario plugin that ships the react-project seed assets.
 const REACT_PROJECT_PLUGIN_ID = 'example-react-project';
@@ -69,7 +72,7 @@ export function registerReactBuildRoutes(
 ): void {
   const { db } = ctx;
   const { sendApiError } = ctx.http;
-  const { PROJECTS_DIR } = ctx.paths;
+  const { PROJECTS_DIR, DESIGN_SYSTEMS_DIR, USER_DESIGN_SYSTEMS_DIR } = ctx.paths;
   const { getProject } = ctx.projectStore;
   const { resolveProjectDir } = ctx.projectFiles;
 
@@ -224,6 +227,10 @@ export function registerReactBuildRoutes(
       );
       return;
     }
+    // Same brand application as the run path — a project scaffolded from the
+    // CLI has to wear the picked design system too, or the two surfaces would
+    // produce different projects from the same inputs.
+    const designSystemId = getProject(db, req.params.id)?.designSystemId;
     const state = await materializeReactScaffold({
       projectId: req.params.id,
       projectDir: dir,
@@ -231,6 +238,12 @@ export function registerReactBuildRoutes(
       framework,
       variant,
       force: body.force === true,
+      designSystemId,
+      brandTokensCss: await resolveBrandTokensCss(
+        designSystemId,
+        DESIGN_SYSTEMS_DIR,
+        USER_DESIGN_SYSTEMS_DIR,
+      ),
     });
     const response: ReactScaffoldResponse = { state };
     res.json(response);

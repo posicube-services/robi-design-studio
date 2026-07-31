@@ -24,6 +24,7 @@ import type {
   ReactScaffoldState,
   ReactScaffoldVariant,
 } from '@open-design/contracts';
+import { resolveDesignSystemAssets } from './design-systems/index.js';
 
 /** Seed asset directory name for a framework + variant. */
 function seedDirName(
@@ -143,6 +144,31 @@ export interface MaterializeReactScaffoldInput {
 
 /** The one file a token-consuming seed changes when the brand changes. */
 const BRAND_TOKENS_REL = path.join('src', 'app', 'brand-tokens.css');
+
+/**
+ * Resolve the active design system's `tokens.css` for `brandTokensCss`.
+ *
+ * Goes through the same seam the system prompt uses, so a generated project and
+ * the prompt describing it can never disagree about which brand is active. Both
+ * scaffold entry points — the run path and `POST /api/projects/:id/react/scaffold`
+ * (plus `od react scaffold`) — call this, so the two surfaces stay identical per
+ * the UI/CLI dual-track rule.
+ */
+export async function resolveBrandTokensCss(
+  designSystemId: string | null | undefined,
+  designSystemsDir: string,
+  userDesignSystemsDir: string,
+): Promise<string | undefined> {
+  if (typeof designSystemId !== 'string' || designSystemId.length === 0) {
+    return undefined;
+  }
+  const assets = await resolveDesignSystemAssets(
+    designSystemId,
+    designSystemsDir,
+    userDesignSystemsDir,
+  );
+  return assets.tokensCss;
+}
 
 /**
  * Write the active design system's `tokens.css` over the seed's

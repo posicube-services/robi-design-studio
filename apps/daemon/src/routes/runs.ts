@@ -61,8 +61,10 @@ import {
   resolveProjectDir,
   SandboxImportedProjectError,
 } from '../projects.js';
-import { resolveDesignSystemAssets } from '../design-systems/index.js';
-import { materializeReactScaffold } from '../react-scaffold.js';
+import {
+  materializeReactScaffold,
+  resolveBrandTokensCss,
+} from '../react-scaffold.js';
 import {
   amrUserIdForRunAnalytics,
   agentProviderIdForRunAnalytics,
@@ -599,15 +601,11 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
       // lookup already lives — and hand the CSS to the materializer, which owns
       // the write. Same seam the system prompt uses, so the project and the
       // prompt can never disagree about which brand is active.
-      const brandTokensCss = designSystemId
-        ? (
-            await resolveDesignSystemAssets(
-              designSystemId,
-              DESIGN_SYSTEMS_DIR,
-              USER_DESIGN_SYSTEMS_DIR,
-            )
-          ).tokensCss
-        : undefined;
+      const brandTokensCss = await resolveBrandTokensCss(
+        designSystemId,
+        DESIGN_SYSTEMS_DIR,
+        USER_DESIGN_SYSTEMS_DIR,
+      );
       const state = await materializeReactScaffold({
         projectId,
         projectDir: dir,
