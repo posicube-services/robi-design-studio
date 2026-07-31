@@ -10,12 +10,13 @@
 // These specs pin the write to the scaffolder, where it is deterministic.
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {
   materializeReactScaffold,
   parseRootTokens,
+  renderMuiBrandTokens,
   resolveBrandTokensCss,
 } from '../src/react-scaffold.js';
 
@@ -195,5 +196,108 @@ describe('materializeReactScaffold brand tokens', () => {
     await expect(
       readFile(path.join(projectDir, 'src', 'app', 'brand-tokens.css'), 'utf8'),
     ).rejects.toThrow();
+  });
+});
+
+// Brands express colours in ways MUI's `decomposeColor` cannot read. Emitting
+// them verbatim crashed the theme at module evaluation with
+// `Invalid hex color: var(--surface)` and took the whole preview down.
+describe('non-literal colour values', () => {
+  const render = async (css: string) => {
+    await writeSeed('minimal-next-a2ui', {
+      'package.json': '{"name":"seed"}',
+      'src/theme/brand-tokens.ts': 'export const brandTokens = {};\n',
+    });
+    await materializeReactScaffold({
+      projectId: 'pv',
+      projectDir,
+      pluginAssetsRoot: assetsRoot,
+      framework: 'next',
+      variant: 'a2ui',
+      designSystemId: 'brand',
+      brandTokensCss: css,
+    });
+    return readFile(path.join(projectDir, 'src', 'theme', 'brand-tokens.ts'), 'utf8');
+  };
+
+  // Slack says "no warm tier here" by aliasing; 48 declarations do this.
+  it('follows a var() alias to the value it points at', async () => {
+    const out = await render(
+      ':root { --accent: #4a154b; --surface: #f8f8f8; --surface-warm: var(--surface); }',
+    );
+    expect(out).toContain('surfaceWarm: "#f8f8f8"');
+    expect(out).not.toContain('var(--surface)');
+  });
+
+  // 219 declarations are color-mix, mostly pressed states — exactly what the
+  // seed derives anyway, so dropping them loses nothing.
+  it('omits color-mix so the seed derives that step instead', async () => {
+    const out = await render(
+      ':root { --accent: #4a154b; --accent-hover: color-mix(in oklab, var(--accent), black 8%); }',
+    );
+    // Assert on the emitted values, not the whole file — the generated header
+    // explains the color-mix rule and would match a naive substring check.
+    expect(out.slice(out.indexOf('DEFAULT_BRAND_TOKENS,'))).not.toContain('color-mix');
+    expect(out).not.toContain('accentHover:');
+  });
+
+  it('keeps rgb/hsl, which MUI reads natively', async () => {
+    const out = await render(':root { --accent: #4a154b; --fg: rgba(0, 0, 0, 0.85); }');
+    expect(out).toContain('fg: "rgba(0, 0, 0, 0.85)"');
+  });
+
+  // Fonts and radius are not colours and must survive untouched.
+  it('passes non-colour tokens through', async () => {
+    const out = await render(':root { --accent: #4a154b; --radius-md: 6px; --font-body: Inter; }');
+    expect(out).toContain('radiusMd: "6px"');
+    expect(out).toContain('fontBody: "Inter"');
+  });
+
+  it('declines to inject when the accent itself is unreadable', async () => {
+    const out = await render(':root { --accent: oklch(0.7 0.1 200); }');
+    expect(out).toBe('export const brandTokens = {};\n');
+  });
+
+  it('always spreads the defaults so the type stays satisfied', async () => {
+    const out = await render(':root { --accent: #4a154b; }');
+    expect(out).toContain('...DEFAULT_BRAND_TOKENS');
+  });
+});
+
+// Colour syntax varies brand by brand, so a sample proves little: 219
+// declarations are color-mix and 48 are var() aliases, spread unevenly. This
+// sweeps every bundled brand and asserts the emitted module never carries a
+// value MUI's decomposeColor would reject at module evaluation.
+describe('every bundled brand renders a usable token module', () => {
+  const COLOUR_FIELD = /^\s+(accent|accentOn|accentHover|accentActive|success|warn|danger|bg|surface|surfaceWarm|fg|fg2): "([^"]*)"/;
+
+  it('emits only colours MUI can parse', async () => {
+    const root = path.resolve(__dirname, '../../../design-systems');
+    const brands = (await readdir(root, { withFileTypes: true }))
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name);
+    expect(brands.length).toBeGreaterThan(100);
+
+    const offenders: string[] = [];
+    let rendered = 0;
+    for (const brand of brands) {
+      let css: string;
+      try {
+        css = await readFile(path.join(root, brand, 'tokens.css'), 'utf8');
+      } catch {
+        continue;
+      }
+      const out = renderMuiBrandTokens(css);
+      if (out === null) continue;
+      rendered += 1;
+      for (const line of out.split('\n')) {
+        const m = COLOUR_FIELD.exec(line);
+        if (m && !/^(#|rgba?\(|hsla?\()/i.test(m[2] ?? '')) {
+          offenders.push(`${brand}: ${m[1]} = ${m[2]}`);
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+    expect(rendered).toBeGreaterThan(100);
   });
 });

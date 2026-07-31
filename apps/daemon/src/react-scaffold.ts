@@ -202,29 +202,77 @@ export function parseRootTokens(css: string): Record<string, string> {
   return out;
 }
 
+/** Fields the MUI theme feeds to its colour maths, so they must be real colours. */
+const MUI_COLOUR_FIELDS = new Set([
+  'accent', 'accentOn', 'accentHover', 'accentActive',
+  'success', 'warn', 'danger',
+  'bg', 'surface', 'surfaceWarm', 'fg', 'fg2',
+]);
+
+/** What MUI's `decomposeColor` can actually read. */
+const MUI_PARSABLE_COLOUR = /^(#|rgba?\(|hsla?\()/i;
+
+/**
+ * Follow `var(--x)` chains to a literal.
+ *
+ * 48 declarations across the brand packs are a bare alias — Slack's
+ * `--surface-warm: var(--surface)`, for instance, saying "no warm tier here".
+ * MUI needs the value those resolve to, not the reference.
+ */
+function resolveVarChain(value: string, tokens: Record<string, string>): string {
+  let current = value;
+  // Depth cap rather than cycle detection: brands alias one or two levels, and
+  // a malformed cycle should degrade to "unusable", not hang.
+  for (let i = 0; i < 5; i += 1) {
+    const match = /^var\(\s*(--[a-z0-9-]+)\s*(?:,([^)]*))?\)$/i.exec(current.trim());
+    if (!match) return current;
+    const target = match[1] ? tokens[match[1]] : undefined;
+    current = target ?? (match[2] ?? '').trim();
+    if (!current) return '';
+  }
+  return current;
+}
+
 /**
  * Render the MUI seed's `brand-tokens.ts` from a brand's `tokens.css`.
  *
- * Returns null when the brand declares no `--accent`, which is the one token
- * the palette cannot be built without — better to leave the seed's own
- * defaults in place than to half-apply a brand.
+ * Colour fields that do not resolve to something MUI can parse are OMITTED
+ * rather than passed through, so the seed's own derivation fills the gap. That
+ * covers the 219 `color-mix()` declarations — most of them pressed states like
+ * `color-mix(in oklab, var(--accent), black 8%)`, which is what deriving `dark`
+ * from the accent already does — plus `oklch()`/`lab()`, which MUI cannot read
+ * at all. Emitting them raised `Invalid hex color: var(--surface)` at module
+ * evaluation and took the whole preview down.
+ *
+ * Returns null when the brand has no usable `--accent`: better to leave the
+ * seed's defaults intact than to half-apply a brand.
  */
-function renderMuiBrandTokens(css: string): string | null {
+export function renderMuiBrandTokens(css: string): string | null {
   const tokens = parseRootTokens(css);
-  if (!tokens['--accent']) return null;
+  const accent = resolveVarChain(tokens['--accent'] ?? '', tokens);
+  if (!MUI_PARSABLE_COLOUR.test(accent)) return null;
   const lines: string[] = [];
   for (const [token, field] of MUI_TOKEN_FIELDS) {
-    const value = tokens[token];
-    if (value === undefined) continue;
+    const raw = tokens[token];
+    if (raw === undefined) continue;
+    const isColour = MUI_COLOUR_FIELDS.has(field);
+    const value = isColour ? resolveVarChain(raw, tokens) : raw;
+    if (isColour && !MUI_PARSABLE_COLOUR.test(value)) continue;
     lines.push(`  ${field}: ${JSON.stringify(value)},`);
   }
   return [
     '// Generated at scaffold time from the picked design system\'s tokens.css.',
     '// Edit the design system, not this file — a re-scaffold overwrites it.',
+    '//',
+    '// Spread over the defaults rather than replacing them: a brand may omit a',
+    '// token whose value MUI cannot read (color-mix(), oklch()), and an absent',
+    '// field has to fall back rather than leave BrandTokens incomplete.',
     '',
+    "import { DEFAULT_BRAND_TOKENS } from './brand-tokens-default';",
     "import type { BrandTokens } from './brand-tokens-type';",
     '',
     'export const brandTokens: BrandTokens = {',
+    '  ...DEFAULT_BRAND_TOKENS,',
     ...lines,
     '};',
     '',
