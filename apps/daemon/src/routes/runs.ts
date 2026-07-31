@@ -61,6 +61,7 @@ import {
   resolveProjectDir,
   SandboxImportedProjectError,
 } from '../projects.js';
+import { resolveDesignSystemAssets } from '../design-systems/index.js';
 import { materializeReactScaffold } from '../react-scaffold.js';
 import {
   amrUserIdForRunAnalytics,
@@ -302,6 +303,10 @@ export interface RegisterRunRoutesDeps {
   paths: {
     PROJECTS_DIR: string;
     RUNTIME_DATA_DIR: string;
+    // Read when seeding a react-project, to write the active design system's
+    // tokens into the generated tree.
+    DESIGN_SYSTEMS_DIR: string;
+    USER_DESIGN_SYSTEMS_DIR: string;
   };
   agents: {
     detectAgents: (agentCliEnv?: Record<string, unknown>) => Promise<DetectedAgent[]>;
@@ -503,7 +508,8 @@ function toOdNativeEvent(record: RunEventRecord): OdNativeEvent | null {
 export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
   const { db, design } = ctx;
   const { createSseResponse, sendApiError } = ctx.http;
-  const { PROJECTS_DIR, RUNTIME_DATA_DIR } = ctx.paths;
+  const { PROJECTS_DIR, RUNTIME_DATA_DIR, DESIGN_SYSTEMS_DIR, USER_DESIGN_SYSTEMS_DIR } =
+    ctx.paths;
   const { detectAgents, getAgentDef } = ctx.agents;
   const { startChatRun } = ctx.chat;
   const {
@@ -553,11 +559,13 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
     metadata,
     pluginId,
     inputs,
+    designSystemId,
   }: {
     projectId: string | undefined;
     metadata: ProjectMetadata;
     pluginId: string | undefined;
     inputs: Record<string, unknown> | null | undefined;
+    designSystemId: string | null | undefined;
   }): Promise<void> {
     try {
       const isReact =
@@ -586,18 +594,35 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
           : resolveProjectDir(PROJECTS_DIR, projectId, metadata, {
               allowUnavailableSandboxImportedProject: true,
             });
+      // The token-consuming seeds wear the active brand through a single file,
+      // `src/app/brand-tokens.css`. Resolve it here — this is where design-system
+      // lookup already lives — and hand the CSS to the materializer, which owns
+      // the write. Same seam the system prompt uses, so the project and the
+      // prompt can never disagree about which brand is active.
+      const brandTokensCss = designSystemId
+        ? (
+            await resolveDesignSystemAssets(
+              designSystemId,
+              DESIGN_SYSTEMS_DIR,
+              USER_DESIGN_SYSTEMS_DIR,
+            )
+          ).tokensCss
+        : undefined;
       const state = await materializeReactScaffold({
         projectId,
         projectDir: dir,
         pluginAssetsRoot: path.join(plugin.fsPath, 'assets'),
         framework,
         variant,
+        designSystemId,
+        brandTokensCss,
       });
       if (state.error) {
         console.warn(`[react] scaffold materialize failed for ${projectId}: ${state.error}`);
       } else if (!state.skipped) {
         console.log(
-          `[react] materialized ${state.filesWritten} ${state.framework}/${state.variant} seed files for ${projectId}`,
+          `[react] materialized ${state.filesWritten} ${state.framework}/${state.variant} seed files for ${projectId}`
+            + ` (brand: ${state.brandTokensApplied ?? 'seed default'})`,
         );
       }
     } catch (err) {
@@ -710,6 +735,7 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
       metadata: runProject?.metadata,
       pluginId: meta.pluginId,
       inputs: resolvedSnapshot?.ok ? resolvedSnapshot.snapshot.inputs : null,
+      designSystemId: runProject?.designSystemId,
     });
     if (typeof meta.agentId !== 'string' || !meta.agentId) {
       try {

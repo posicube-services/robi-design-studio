@@ -17,7 +17,7 @@
 //   scaffold/       scaffold-next/      ← lightweight `plain` starters (fallback)
 
 import { existsSync } from 'node:fs';
-import { cp, readdir, stat } from 'node:fs/promises';
+import { cp, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type {
   ReactScaffoldFramework,
@@ -130,6 +130,48 @@ export interface MaterializeReactScaffoldInput {
   framework: ReactScaffoldFramework;
   variant?: ReactScaffoldVariant | undefined;
   force?: boolean | undefined;
+  /** Active design system id, recorded on the returned state for logging. */
+  designSystemId?: string | null | undefined;
+  /**
+   * The active design system's `tokens.css`, verbatim. Resolved by the caller
+   * (which owns design-system lookup) and written over the seed's
+   * `src/app/brand-tokens.css` — see `applyBrandTokens`. Passing the text
+   * rather than an id keeps this module pure filesystem work.
+   */
+  brandTokensCss?: string | null | undefined;
+}
+
+/** The one file a token-consuming seed changes when the brand changes. */
+const BRAND_TOKENS_REL = path.join('src', 'app', 'brand-tokens.css');
+
+/**
+ * Write the active design system's `tokens.css` over the seed's
+ * `src/app/brand-tokens.css`, so a generated project actually wears the brand
+ * the user picked.
+ *
+ * The token-consuming seeds document brand application in their `globals.css`
+ * as "replace `brand-tokens.css` with that brand's `tokens.css` verbatim" —
+ * which, until this existed, nothing did. The agent sometimes read that comment
+ * and copied the file itself, so brands appeared to work; tightening the A2UI
+ * instruction to "the spec is your only deliverable" removed that accident and
+ * left every project on the seed's default palette. Applying the brand is the
+ * system's job (D4 — per-customer variation *is* the tokens), not something to
+ * hope an agent notices, so it happens here, deterministically.
+ *
+ * Returns the design system id when applied, else null. A no-op when the seed
+ * has no `brand-tokens.css` (the MUI seeds take their palette from a JS theme)
+ * or the caller resolved no tokens.
+ */
+async function applyBrandTokens(
+  projectDir: string,
+  designSystemId: string | null | undefined,
+  brandTokensCss: string | null | undefined,
+): Promise<string | null> {
+  if (typeof brandTokensCss !== 'string' || brandTokensCss.length === 0) return null;
+  const target = path.join(projectDir, BRAND_TOKENS_REL);
+  if (!existsSync(target)) return null;
+  await writeFile(target, brandTokensCss, 'utf8');
+  return designSystemId ?? null;
 }
 
 function idleScaffoldState(
@@ -143,6 +185,7 @@ function idleScaffoldState(
     filesWritten: 0,
     skipped: false,
     source: null,
+    brandTokensApplied: null,
     error: null,
   };
 }
@@ -192,6 +235,11 @@ export async function materializeReactScaffold(
     state.variant = resolved.variant;
     state.source = resolved.dir;
     state.filesWritten = await countFiles(resolved.dir);
+    state.brandTokensApplied = await applyBrandTokens(
+      input.projectDir,
+      input.designSystemId,
+      input.brandTokensCss,
+    );
     return state;
   } catch (err) {
     state.error = err instanceof Error ? err.message : String(err);

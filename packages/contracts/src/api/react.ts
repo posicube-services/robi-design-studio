@@ -178,6 +178,11 @@ export interface ReactScaffoldState {
   // Absolute path of the seed asset directory used; null when skipped or no
   // seed was found.
   source: string | null;
+  // Design system whose `tokens.css` was written over the seed's
+  // `src/app/brand-tokens.css`; null when no brand was applied — either the
+  // seed does not consume tokens that way (the MUI seeds take their palette
+  // from a JS theme) or the active design system ships no `tokens.css`.
+  brandTokensApplied: string | null;
   error: string | null;
 }
 
