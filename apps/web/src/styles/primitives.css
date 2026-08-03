@@ -329,12 +329,16 @@ code {
 }
 
 /* -------- Brand glyph ------------------------------------------------ */
-/* Monochrome robi brand mark. The glyph ships as /brand-icon.svg and
-   is masked with --text-strong so it reads as ink in light mode and cream in
-   dark mode. Consumers set their own size and placement. */
+/* robi brand mark. Painted as an image rather than masked with --text-strong:
+   the mark is a colour symbol, and a mask keeps only alpha, which turned it
+   into an ink silhouette that no longer matched the favicon. It reads the same
+   in light and dark by design. The artwork carries its own padding, so the
+   fixed boxes upstream sets (hero 26px, rail 30px) stay untouched. */
 .od-brand-glyph {
   display: inline-block;
-  background-color: var(--text-strong);
-  -webkit-mask: url(/brand-icon.svg) center / contain no-repeat;
-  mask: url(/brand-icon.svg) center / contain no-repeat;
+  background-color: transparent;
+  background-image: url(/brand-icon.png);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
