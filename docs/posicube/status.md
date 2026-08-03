@@ -1,6 +1,6 @@
 # Status and next steps
 
-_Last updated: 2026-07-31._
+_Last updated: 2026-08-03._
 
 ## Where we are
 
@@ -14,12 +14,13 @@ see "Verified by running it" below.
 | Everything upstream does | untouched |
 | Generate a runnable React/Next project | working — verified against a live daemon |
 | A2UI spec authoring (hard-gated) | working — renderer, 30-block catalog, Zod gate, `/a2ui` route, authoring skill |
-| Pick enforcement at creation (`plain` / `minimal` / `a2ui`) | code complete — only `a2ui` has been exercised |
+| Pick enforcement at creation (`plain` / `minimal` / `shadcn` / `a2ui` / `a2ui-shadcn`) | code complete — `a2ui`, `a2ui-shadcn`, `minimal` and `shadcn` exercised; `plain` not yet |
 | Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
 | Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
 | Brand tokens reach a generated project | working — the scaffolder writes them on both the run and CLI paths; verified on a live daemon, not yet eyeballed in a browser |
 | A2UI on shadcn + Tailwind (`a2ui-shadcn`) | working — seed complete (all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged), and a real agent produced a gate-valid spec on its first attempt. It also duplicated the screen as React code — see below. |
-| A2UI on MUI Minimal (`a2ui`) | working — the token bridge lands the picked brand on MUI's theme; `minimal`/`plain` MUI seeds still lack it |
+| A2UI on MUI Minimal (`a2ui`) | working — the token bridge lands the picked brand on MUI's theme |
+| shadcn + Tailwind at Tier 2 (`shadcn`) | working — `shadcn-next` / `shadcn-vite`, 39 files each, build clean; verified on a live daemon with Slack |
 | Dark mode | out of scope by contract — 1 of 152 brands defines any dark construct (our own `mui-minimal`) |
 
 Upstream moved again during that same session (`89d6d4ef2`, one commit past what
