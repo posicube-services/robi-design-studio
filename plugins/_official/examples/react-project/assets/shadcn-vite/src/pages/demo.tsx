@@ -23,25 +23,29 @@ import {
 import type { Tone } from 'src/ui';
 
 /**
- * Demo dashboard. REPLACE this with the brief's real screens — a seed still
- * showing its own demo is the clearest sign nothing was built.
+ * Reference screen, routed at `/demo` rather than `/`.
  *
- * It exists to show the two things worth copying: every visual value comes from
- * the active design system's tokens through a Tailwind utility, and screens are
- * composed from `src/ui` rather than from raw markup.
+ * It sits off the landing route on purpose: `/` is what the workspace preview
+ * loads, so a demo living there means a run asked for a signup screen shows a
+ * dashboard until the agent replaces it. Here it stays readable as an example
+ * without ever being mistaken for the deliverable.
+ *
+ * What it is worth copying for: every visual value comes from the active design
+ * system's tokens through a Tailwind utility, and screens are composed from
+ * `src/ui` rather than from raw markup. Delete it once the real screens exist.
  */
-export function DashboardPage() {
+export function DemoPage() {
   const { data: customers = [], isLoading } = useCustomers();
   const [inviting, setInviting] = useState(false);
 
   return (
     <DashboardLayout
       brand="Acme"
-      activeHref="/"
+      activeHref="/demo"
       sections={[
         {
           items: [
-            { label: '대시보드', href: '/', icon: <TrendingUp className="size-4" /> },
+            { label: '대시보드', href: '/demo', icon: <TrendingUp className="size-4" /> },
             { label: '고객', href: '/customers', icon: <Users className="size-4" /> },
             { label: '제품', href: '/products', icon: <Package className="size-4" /> },
           ],
