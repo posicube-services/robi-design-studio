@@ -704,7 +704,7 @@ export const de: Dict = {
   'homeHero.templatePicker.projectTypes': 'Projekttypen',
   'homeHero.templatesScrollHint': 'Nach oben scrollen, um weitere Vorlagen zu entdecken',
   'homeHero.templatesCollapse': 'Vorlagen einklappen',
-  'homeHero.subtitlePrefix': 'Die quelloffene Alternative zu Claude Design.',
+  'homeHero.subtitlePrefix': 'Open Design, customized for Posicube’s design studio.',
   'homeHero.placeholder': 'Beschreibe, was du generieren möchtest…',
   'homeHero.placeholderActive': 'Bearbeite die Beispielabfrage oder schreibe eine eigene…',
   'homeHero.carousel.hint': 'Datei anhängen, Designsystem verknüpfen oder beschreiben, was du erstellen möchtest',

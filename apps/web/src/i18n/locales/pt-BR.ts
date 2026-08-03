@@ -704,7 +704,7 @@ export const ptBR: Dict = {
   'homeHero.templatePicker.projectTypes': 'Tipos de projeto',
   'homeHero.templatesScrollHint': 'Role para cima para explorar mais modelos',
   'homeHero.templatesCollapse': 'Recolher modelos',
-  'homeHero.subtitlePrefix': 'A alternativa open-source ao Claude Design.',
+  'homeHero.subtitlePrefix': 'Open Design, customized for Posicube’s design studio.',
   'homeHero.placeholder': 'Descreva o que você quer gerar…',
   'homeHero.placeholderActive': 'Edite a consulta de exemplo ou escreva a sua própria…',
   'homeHero.carousel.hint': 'Anexe um arquivo, vincule seu design system ou descreva o que você quer criar',

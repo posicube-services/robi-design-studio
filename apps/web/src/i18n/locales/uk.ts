@@ -704,7 +704,7 @@ export const uk: Dict = {
   'homeHero.templatePicker.projectTypes': 'Типи проєктів',
   'homeHero.templatesScrollHint': 'Прокрутіть угору, щоб переглянути більше шаблонів',
   'homeHero.templatesCollapse': 'Згорнути шаблони',
-  'homeHero.subtitlePrefix': 'Альтернатива Claude Design з відкритим кодом.',
+  'homeHero.subtitlePrefix': 'Open Design, customized for Posicube’s design studio.',
   'homeHero.placeholder': 'Опишіть, що ви хочете згенерувати…',
   'homeHero.placeholderActive': 'Відредагуйте приклад запиту або напишіть власний…',
   'homeHero.carousel.hint': 'Прикріпіть файл, підключіть дизайн-систему або опишіть, що хочете створити',

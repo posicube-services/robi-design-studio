@@ -35,8 +35,8 @@ import { processWebSourcemaps } from "./web-sourcemaps.js";
 
 const execFileAsync = promisify(execFile);
 
-const PRODUCT_NAME = "Open Design";
-const APP_IMAGE_PRODUCT_NAME = "Open-Design";
+const PRODUCT_NAME = "robi Design Studio";
+const APP_IMAGE_PRODUCT_NAME = "robi-Design-Studio";
 const DESKTOP_LOG_ECHO_ENV = "OD_DESKTOP_LOG_ECHO";
 // The containerized build sets this to the standalone pnpm binary fetched by
 // buildDockerArgs; runProductionInstall reads it to avoid invoking `npm` inside
@@ -612,7 +612,7 @@ async function writeLinuxBuilderConfig(config: ToolPackConfig, paths: LinuxPaths
   const packageVersion = electronBuilderVersionForAppVersion(packagedVersion);
 
   const builderConfig: Record<string, unknown> = {
-    appId: "io.open-design.desktop",
+    appId: "io.posicube.robi-design-studio",
     artifactName: `${PRODUCT_NAME}-${namespaceToken}.\${ext}`,
     asar: false,
     buildDependenciesFromSource: false,
@@ -657,7 +657,7 @@ async function writeLinuxBuilderConfig(config: ToolPackConfig, paths: LinuxPaths
       target,
       icon: linuxResources.icon,
       category: "Development",
-      synopsis: "Open Design",
+      synopsis: PRODUCT_NAME,
       maintainer: "Open Design Contributors",
     },
     // Keep the AppImage launch fallback explicit. Our top-level AppRun wrapper

@@ -5,8 +5,8 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata = {
-  title: 'A2UI — Open Design',
-  description: 'Spec-driven screens on shadcn + Tailwind, styled by the active design system.',
+  title: 'robi Design Studio — Next.js',
+  description: 'Next.js on shadcn + Tailwind, styled by the active design system.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
