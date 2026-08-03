@@ -17,10 +17,10 @@ see "Verified by running it" below.
 | Pick enforcement at creation (`plain` / `minimal` / `shadcn` / `a2ui` / `a2ui-shadcn`) | code complete — `a2ui`, `a2ui-shadcn`, `minimal` and `shadcn` exercised; `plain` not yet |
 | Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
 | Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
-| Brand tokens reach a generated project | working — the scaffolder writes them on both the run and CLI paths; verified on a live daemon, not yet eyeballed in a browser |
+| Brand tokens reach a generated project | working — the scaffolder writes them on both the run and CLI paths; confirmed in the browser on every substrate |
 | A2UI on shadcn + Tailwind (`a2ui-shadcn`) | working — seed complete (all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged), and a real agent produced a gate-valid spec on its first attempt. It also duplicated the screen as React code — see below. |
 | A2UI on MUI Minimal (`a2ui`) | working — the token bridge lands the picked brand on MUI's theme |
-| shadcn + Tailwind at Tier 2 (`shadcn`) | working — `shadcn-next` / `shadcn-vite`, 39 files each, build clean; verified on a live daemon with Slack |
+| shadcn + Tailwind at Tier 2 (`shadcn`) | working — `shadcn-next` / `shadcn-vite`, 39 files each, build clean; both confirmed in the browser |
 | Dark mode | out of scope by contract — 1 of 152 brands defines any dark construct (our own `mui-minimal`) |
 
 Upstream moved again during that same session (`89d6d4ef2`, one commit past what
@@ -161,7 +161,10 @@ The chip is now `A2UI 화면 (MUI)` in all 19 locales, and both chip description
 name their substrate — "styled by the design system" stopped being a
 differentiator the moment both were.
 
-Confirmed in the browser: `A2UI 화면 (MUI)` + Slack renders in Slack's aubergine.
+Confirmed in the browser, on every substrate: A2UI (MUI), A2UI (shadcn), and
+both Tier 2 pairs render in the picked brand's colour. The chain the whole
+sequence was chasing — pick a design system, get a project that wears it — is
+closed.
 
 Two defects surfaced between the API-level check and that screen, both worth
 keeping:
@@ -235,6 +238,27 @@ derive a dark scheme from the light tokens (cheap, but a good dark theme is not
 an inversion — surfaces and contrast need re-deriving, so per-brand quality would
 be uneven), or add a dark layer to the token contract (152 brands, upstream-scale,
 but brand-authored and therefore correct).
+
+### Open, in rough priority order
+
+- **The seeds' demo landing.** Both shadcn Tier 2 seeds ship a demo dashboard at
+  `/`, so a run that was asked for a signup screen shows a dashboard until the
+  agent replaces it. Agents do replace it, so this is confusion rather than
+  breakage — moving the demo to `/demo` and leaving `/` thin (the way the A2UI
+  seeds already do) would remove it.
+- **`mui-minimal` reads as upstream's `minimal`.** Two design systems, adjacent
+  in the list, one called "Minimal" and one "Minimal (MUI Theme)", with nothing
+  in common: upstream's is near-black on Inter, ours is emerald on Public Sans.
+  Renaming the display title to something like "MUI Minimal Kit" would separate
+  them at a glance.
+- **The scaffold route cannot select an a2ui variant.** `POST
+  /api/projects/:id/react/scaffold` accepts only `plain` and `minimal`, so `od
+  react scaffold` cannot produce what the browser can — a dual-track gap.
+- **17 locales still describe the react-project chips in their old wording.**
+  The labels are language-neutral now and uniform across all 19; the
+  descriptions were only rewritten for `en` and `ko`.
+- **The rail carries six of our chips.** They are last and require scrolling,
+  and the substrate in the label is the only thing separating each pair.
 
 ## What is deliberately not here
 
