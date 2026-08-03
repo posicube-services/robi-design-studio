@@ -3772,6 +3772,8 @@ function homeHeroChipDescription(chipId: string, t: ReturnType<typeof useT>): st
     case 'a2ui-shadcn-screen': return t('homeHero.chip.a2uiShadcnScreenDesc');
     case 'next-project': return t('homeHero.chip.nextProjectDesc');
     case 'react-project': return t('homeHero.chip.reactProjectDesc');
+    case 'next-project-shadcn': return t('homeHero.chip.nextProjectShadcnDesc');
+    case 'react-project-shadcn': return t('homeHero.chip.reactProjectShadcnDesc');
     case 'prototype': return t('homeHero.chip.prototypeDesc');
     case 'web-clone': return t('homeHero.chip.webCloneDesc');
     case 'wireframe': return t('homeHero.chip.wireframeDesc');

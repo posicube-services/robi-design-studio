@@ -154,7 +154,12 @@ export type ReactScaffoldFramework = 'vite' | 'next';
 // active design system's tokens actually drive the blocks. Both exist so the
 // substrate can be migrated one project at a time — see
 // docs/posicube/architecture-decisions.md.
-export type ReactScaffoldVariant = 'minimal' | 'plain' | 'a2ui' | 'a2ui-shadcn';
+export type ReactScaffoldVariant =
+  | 'minimal'
+  | 'plain'
+  | 'shadcn'
+  | 'a2ui'
+  | 'a2ui-shadcn';
 
 export interface ReactScaffoldRequest {
   framework: ReactScaffoldFramework;

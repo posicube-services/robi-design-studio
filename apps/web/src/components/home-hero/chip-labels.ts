@@ -18,6 +18,8 @@ export function homeHeroChipLabel(chipId: string, t: Translate): string {
     case 'a2ui-shadcn-screen': return t('homeHero.chip.a2uiShadcnScreen');
     case 'next-project': return t('homeHero.chip.nextProject');
     case 'react-project': return t('homeHero.chip.reactProject');
+    case 'next-project-shadcn': return t('homeHero.chip.nextProjectShadcn');
+    case 'react-project-shadcn': return t('homeHero.chip.reactProjectShadcn');
     case 'prototype': return t('homeHero.chip.prototype');
     case 'web-clone': return t('homeHero.chip.webClone');
     case 'wireframe': return t('homeHero.chip.wireframe');

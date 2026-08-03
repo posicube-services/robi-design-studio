@@ -216,6 +216,43 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     },
   },
   {
+    id: 'next-project-shadcn',
+    label: 'Next.js project (shadcn)',
+    icon: 'layers-filled',
+    group: 'create',
+    description: 'Multi-file Next app on shadcn + Tailwind',
+    namesProject: true,
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-react-project',
+      projectKind: 'react-project',
+      // Same job as `next-project`, different component library. shadcn ships
+      // as copy-in source, so `src/ui` is the project's own — editing it is the
+      // model, not a fork.
+      inputs: {
+        framework: 'Next.js',
+        variant: 'shadcn + Tailwind',
+      },
+    },
+  },
+  {
+    id: 'react-project-shadcn',
+    label: 'React project (shadcn)',
+    icon: 'file-code',
+    group: 'create',
+    description: 'Vite + React SPA on shadcn + Tailwind',
+    namesProject: true,
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-react-project',
+      projectKind: 'react-project',
+      inputs: {
+        framework: 'Vite + React',
+        variant: 'shadcn + Tailwind',
+      },
+    },
+  },
+  {
     id: 'prototype',
     label: 'Prototype',
     icon: 'palette',
@@ -531,7 +568,9 @@ export const CREATE_RAIL_ORDER = [
   'a2ui-screen',
   'a2ui-shadcn-screen',
   'next-project',
+  'next-project-shadcn',
   'react-project',
+  'react-project-shadcn',
 ] as const;
 
 // Chip ids the onboarding "build a design system" teaser intentionally omits.

@@ -14,6 +14,8 @@
 //   shadcn-next-a2ui/                   ← A2UI on shadcn + Tailwind v4, where the
 //                                         active design system's tokens actually
 //                                         drive the blocks
+//   shadcn-vite/    shadcn-next/        ← shadcn + Tailwind v4 without A2UI: the
+//                                         agent writes real screens from src/ui
 //   scaffold/       scaffold-next/      ← lightweight `plain` starters (fallback)
 
 import { existsSync } from 'node:fs';
@@ -39,6 +41,9 @@ function seedDirName(
   }
   if (variant === 'a2ui') {
     return framework === 'next' ? 'minimal-next-a2ui' : 'minimal-vite';
+  }
+  if (variant === 'shadcn') {
+    return framework === 'next' ? 'shadcn-next' : 'shadcn-vite';
   }
   if (variant === 'minimal') {
     return framework === 'next' ? 'minimal-next' : 'minimal-vite';
@@ -67,7 +72,16 @@ export function resolveReactSeedDir(
     const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'minimal'));
     if (existsSync(fallback)) return { dir: fallback, variant: 'minimal' };
   }
-  if (variant === 'minimal' || variant === 'a2ui' || variant === 'a2ui-shadcn') {
+  if (variant === 'shadcn') {
+    const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'minimal'));
+    if (existsSync(fallback)) return { dir: fallback, variant: 'minimal' };
+  }
+  if (
+    variant === 'minimal'
+    || variant === 'shadcn'
+    || variant === 'a2ui'
+    || variant === 'a2ui-shadcn'
+  ) {
     const fallback = path.join(pluginAssetsRoot, seedDirName(framework, 'plain'));
     if (existsSync(fallback)) return { dir: fallback, variant: 'plain' };
   }
@@ -159,6 +173,7 @@ const BRAND_TOKENS_CSS_RELS = [
   path.join('src', 'app', 'brand-tokens.css'),
   path.join('src', 'styles', 'tokens.css'),
   path.join('src', 'app', 'tokens.css'),
+  path.join('src', 'styles', 'brand-tokens.css'),
 ];
 
 /**

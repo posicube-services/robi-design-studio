@@ -581,13 +581,16 @@ export function registerRunRoutes(app: Express, ctx: RegisterRunRoutesDeps) {
       const variantRaw = inputs && typeof inputs.variant === 'string' ? inputs.variant : '';
       // Order matters: both a2ui labels contain "A2UI", so the shadcn one has to
       // be tested first or it would resolve to the MUI seed.
+      const wantsShadcn = /shadcn|tailwind/i.test(variantRaw);
       const variant = /a2ui/i.test(variantRaw)
-        ? /shadcn|tailwind/i.test(variantRaw)
+        ? wantsShadcn
           ? 'a2ui-shadcn'
           : 'a2ui'
-        : /plain/i.test(variantRaw)
-          ? 'plain'
-          : 'minimal';
+        : wantsShadcn
+          ? 'shadcn'
+          : /plain/i.test(variantRaw)
+            ? 'plain'
+            : 'minimal';
       const baseDir =
         typeof metadata?.baseDir === 'string' ? path.normalize(metadata.baseDir) : null;
       const dir =

@@ -1137,6 +1137,8 @@ export interface Dict {
   'homeHero.chip.a2uiShadcnScreen': string;
   'homeHero.chip.nextProject': string;
   'homeHero.chip.reactProject': string;
+  'homeHero.chip.nextProjectShadcn': string;
+  'homeHero.chip.reactProjectShadcn': string;
   'homeHero.chip.prototype': string;
   'homeHero.chip.webClone': string;
   'homeHero.chip.liveArtifact': string;
@@ -1164,6 +1166,8 @@ export interface Dict {
   'homeHero.chip.a2uiShadcnScreenDesc': string;
   'homeHero.chip.nextProjectDesc': string;
   'homeHero.chip.reactProjectDesc': string;
+  'homeHero.chip.nextProjectShadcnDesc': string;
+  'homeHero.chip.reactProjectShadcnDesc': string;
   'homeHero.chip.prototypeDesc': string;
   'homeHero.chip.webCloneDesc': string;
   'homeHero.chip.wireframeDesc': string;
