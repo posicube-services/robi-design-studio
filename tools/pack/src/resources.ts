@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { cp } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 function resolveToolsPackRoot(startDir: string): string {
@@ -72,6 +72,37 @@ const BUNDLED_RESOURCE_TREES = [
   { from: join("data", "plugin-previews"), to: join("data", "plugin-previews") },
 ] as const;
 
+/**
+ * Local build output that must never reach a packaged bundle.
+ *
+ * These trees are sources in git, but they live in a working directory where
+ * anyone may have run an install or a build, and none of that is tracked — so
+ * it is invisible until it is copied. A react-project seed with `node_modules`
+ * is the case that bites: its `.bin` entries are absolute symlinks into the
+ * developer's checkout, and electron-builder rejects the bundle outright with
+ * "invalid destination for symbolic link in bundle". A build that did succeed
+ * would be worse, shipping tens of thousands of stale files pinned to whatever
+ * that machine resolved.
+ *
+ * The daemon's own seed copy already excludes these (SEED_COPY_EXCLUDE in
+ * apps/daemon/src/react-scaffold.ts); this is the same hazard at the packaging
+ * copy.
+ */
+const EXCLUDED_RESOURCE_ENTRIES = new Set([
+  "node_modules",
+  ".next",
+  "out",
+  "dist",
+  ".turbo",
+  "tsconfig.tsbuildinfo",
+]);
+
+function isExcludedResourceEntry(root: string, absolutePath: string): boolean {
+  const rel = relative(root, absolutePath);
+  if (rel.length === 0) return false;
+  return rel.split(sep).some((segment) => EXCLUDED_RESOURCE_ENTRIES.has(segment));
+}
+
 export async function copyBundledResourceTrees({
   workspaceRoot,
   resourceRoot,
@@ -80,8 +111,10 @@ export async function copyBundledResourceTrees({
   resourceRoot: string;
 }): Promise<void> {
   for (const entry of BUNDLED_RESOURCE_TREES) {
-    await cp(join(workspaceRoot, entry.from), join(resourceRoot, entry.to), {
+    const from = join(workspaceRoot, entry.from);
+    await cp(from, join(resourceRoot, entry.to), {
       recursive: true,
+      filter: (src) => !isExcludedResourceEntry(from, src),
     });
   }
 }
