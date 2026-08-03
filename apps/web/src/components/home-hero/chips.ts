@@ -139,10 +139,10 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   // same strings.
   {
     id: 'a2ui-screen',
-    label: 'A2UI screen',
+    label: 'A2UI (MUI)',
     icon: 'blocks',
     group: 'create',
-    description: 'Spec-driven screens from a fixed catalog',
+    description: 'Validated screen spec assembled from a fixed catalog',
     namesProject: true,
     action: {
       kind: 'apply-scenario',
@@ -160,10 +160,10 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   },
   {
     id: 'a2ui-shadcn-screen',
-    label: 'A2UI screen (shadcn)',
-    icon: 'grid',
+    label: 'A2UI (shadcn)',
+    icon: 'blocks',
     group: 'create',
-    description: 'Same A2UI contract, styled by the design system',
+    description: 'Validated screen spec assembled from a fixed catalog',
     namesProject: true,
     action: {
       kind: 'apply-scenario',
@@ -183,7 +183,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   },
   {
     id: 'next-project',
-    label: 'Next.js project',
+    label: 'Next.js (MUI)',
     icon: 'layers-filled',
     group: 'create',
     description: 'Multi-file Next app with SSR and file routing',
@@ -200,10 +200,10 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   },
   {
     id: 'react-project',
-    label: 'React project',
+    label: 'React (MUI)',
     icon: 'file-code',
     group: 'create',
-    description: 'Vite + React SPA you can deploy as static files',
+    description: 'Vite + React SPA you deploy as static files',
     namesProject: true,
     action: {
       kind: 'apply-scenario',
@@ -217,10 +217,10 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   },
   {
     id: 'next-project-shadcn',
-    label: 'Next.js project (shadcn)',
+    label: 'Next.js (shadcn)',
     icon: 'layers-filled',
     group: 'create',
-    description: 'Multi-file Next app on shadcn + Tailwind',
+    description: 'Multi-file Next app with SSR and file routing',
     namesProject: true,
     action: {
       kind: 'apply-scenario',
@@ -237,10 +237,10 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   },
   {
     id: 'react-project-shadcn',
-    label: 'React project (shadcn)',
+    label: 'React (shadcn)',
     icon: 'file-code',
     group: 'create',
-    description: 'Vite + React SPA on shadcn + Tailwind',
+    description: 'Vite + React SPA you deploy as static files',
     namesProject: true,
     action: {
       kind: 'apply-scenario',

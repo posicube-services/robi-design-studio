@@ -9,8 +9,8 @@ export function cn(...inputs: ClassValue[]) {
  * The catalog's colour domain is `primary|success|warning|error|info|grey`, but
  * the OD token contract only guarantees `--accent --success --warn --danger
  * --muted`. `info` has no token, so it borrows `--accent` here. That is a
- * prototype assumption, not a decision — the real options are to drop `info`
- * from the catalog domain or to add a token.
+ * standing assumption, not a decision — the real options are to drop `info`
+ * from the semantic domain or to add a token to the contract.
  */
 export const SEMANTIC_BG: Record<string, string> = {
   primary: 'bg-accent',
