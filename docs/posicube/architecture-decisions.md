@@ -92,6 +92,7 @@ Enforcement is chosen at project creation:
 | --- | --- | --- | --- | --- |
 | `plain` | none — agent writes what it likes | soft: active design system's `tokens.css` | yes, via `tokens.css` | `scaffold` / `scaffold-next` |
 | `minimal` | MUI Minimal component library | medium: components fixed, composition free | yes, via the MUI token bridge | `minimal-vite` / `minimal-next` |
+| `shadcn` | shadcn + Tailwind v4 component set | medium: components fixed, composition free | yes, via Tailwind's `@theme` | `shadcn-vite` / `shadcn-next` |
 | `a2ui` | MUI Minimal **+ fixed spec catalog** | hard: Zod gate | yes, via the MUI token bridge | `minimal-next-a2ui` |
 | `a2ui-shadcn` | shadcn + Tailwind v4 **+ the same catalog** | hard: the same Zod gate | yes, via Tailwind's `@theme` | `shadcn-next-a2ui` |
 
@@ -100,12 +101,27 @@ a byte-identical `src/theme`, so porting the bridge from the a2ui seed to the
 other two was four files copied and three edits repeated — no divergence to
 maintain.
 
-There is no shadcn Tier 2 (`minimal`-equivalent) seed, and adding one is a bigger
-job than it looks. Strip A2UI out of `shadcn-next-a2ui` and what remains is ~30
-files of which **`src/ui` is exactly one**: the substrate's richness there comes
-from the 31 blocks we wrote, not from shadcn. Making it a peer of MUI Minimal —
-24 components, layouts, 44 theme overrides — means owning a second component set.
-That is a product decision, not a port.
+### The shadcn Tier 2 seeds
+
+Stripping A2UI out of `shadcn-next-a2ui` leaves ~30 files of which **`src/ui` was
+exactly one** — the substrate's richness there is the 31 blocks we wrote, not
+shadcn itself. So the component set had to be written, and it is now ours to
+maintain: that was the cost of this choice, taken deliberately.
+
+`src/ui` is 12 files (button, card, badge, avatar, fields, feedback, table, tabs,
+dialog, stat-card, nav) plus `src/layouts/{dashboard,auth}`. `shadcn-next` and
+`shadcn-vite` share all of it byte-for-byte; only the entry differs — Next app
+router versus Vite + react-router.
+
+**No new dependencies.** shadcn distributes components as copy-in source rather
+than a package, so writing them *is* the model. Two consequences worth knowing:
+`Tabs` carries its own ARIA roles and arrow-key handling, and `Dialog` is the
+native `<dialog>` element — `showModal()` gives focus trapping, page inertness
+and Escape-to-close, which a div-with-overlay would have to reimplement and
+usually gets wrong.
+
+A `shadcn` request on a tree missing these seeds degrades to the MUI Tier 2 seed
+rather than the plain starter: same job, different library.
 
 ### Why two a2ui variants
 

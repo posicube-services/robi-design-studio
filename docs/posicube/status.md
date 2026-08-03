@@ -197,10 +197,26 @@ defect, repeated per seed under three different filenames. The three MUI seeds
 share a byte-identical `src/theme`, so the port was four files copied plus three
 edits repeated, with no divergence left behind.
 
-Not done: a shadcn Tier 2 seed. See `architecture-decisions.md` — without A2UI
-that seed is ~30 files with a single component file, so making it a peer of MUI
-Minimal means owning a second component set, which is a product decision rather
-than a port.
+### shadcn reaches Tier 2 as well (2026-08-03)
+
+`Next.js 프로젝트` and `React 프로젝트` were MUI-only; both substrates are now
+selectable, and both wear the brand.
+
+| Checked on a live daemon | Result |
+| --- | --- |
+| Seed chosen for `Vite + React` + `shadcn + Tailwind` | `[react] materialized 39 vite/shadcn seed files … (brand: slack)` |
+| `src/styles/brand-tokens.css` in the project | `--accent: #4a154b` — Slack's aubergine |
+| `src/ui` in the project | 12 files |
+| Both seeds standalone | `npm ci` → typecheck → build, clean |
+
+The component set is the part that had to be written rather than ported, and it
+is now ours to maintain — the cost named in `architecture-decisions.md` before
+starting, accepted deliberately. No new dependencies: `Tabs` owns its ARIA and
+keyboard handling, `Dialog` is the native `<dialog>`.
+
+Four react-project chips became six. That is a lot for a rail that already has to
+be scrolled, and the labels are now the only thing separating them — every chip
+names its substrate for exactly that reason.
 
 ### Dark mode is out of scope, by contract
 
