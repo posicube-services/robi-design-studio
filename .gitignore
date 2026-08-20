@@ -6,7 +6,7 @@ out/
 .tmp/
 .DS_Store
 *.log
-/OpenDesign.exe
+/Open Design.exe
 .vite
 .astro/
 .wrangler/
@@ -108,6 +108,10 @@ deploy/agent-bins/
 # Local agent worktrees (must stay git-ignored so pnpm guard does not scan them)
 .slim/worktrees/
 .slim/worktrees.json
+
+# Python bytecode from workflow helper self-checks / local compile.
+__pycache__/
+*.py[cod]
 
 # --- posicube additions (keep last so upstream appends land above) ---
 

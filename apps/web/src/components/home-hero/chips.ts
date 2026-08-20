@@ -255,7 +255,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   {
     id: 'prototype',
     label: 'Prototype',
-    icon: 'palette',
+    icon: 'artboard',
     group: 'create',
     description: 'Interactive app mockups',
     // Prototype now binds to the bundled `example-web-prototype` plugin,
@@ -424,7 +424,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   {
     id: 'live-artifact',
     label: 'Live artifact',
-    icon: 'refresh',
+    icon: 'bar-chart-box',
     group: 'create',
     description: 'Data-backed live dashboards',
     hint: 'Build a refreshable artifact backed by connector or local data.',
@@ -460,7 +460,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
   {
     id: 'video',
     label: 'Video',
-    icon: 'play',
+    icon: 'video-ai',
     group: 'create',
     description: 'Clips, reels & promos',
     action: {
@@ -498,7 +498,7 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     label: 'Create plugin',
     icon: 'edit',
     group: 'migrate',
-    hint: 'Author a reusable Open Design plugin and add it to My plugins.',
+    hint: 'Author a reusable OpenDesign plugin and add it to My plugins.',
     action: { kind: 'create-plugin' },
   },
   {
@@ -531,40 +531,31 @@ export function chipsForGroup(group: ChipGroup): HomeHeroChip[] {
   return HOME_HERO_CHIPS.filter((c) => c.group === group);
 }
 
-// Display order for the inline `create` scenario rail. The composer leads with
-// Website clone (the fastest "paste a URL, get a site" on-ramp), then the slide
-// deck ("Slides") and the core build scenarios in decreasing generality
-// (Prototype → Wireframe → Mobile → Document → Animation), then the media
-// scenarios. Brand Kit is intentionally omitted here so it trails the scenario
-// set — it dispatches into the Brand Kit tab rather than seeding a scenario
-// plugin. Any create chip not listed keeps its catalog order after the explicit
-// entries (see `orderedCreateChips`).
+// Fixed Home information architecture. Only these ten output types are
+// top-level choices; Wireframe and Mobile remain executable catalog entries but
+// live under Prototype's second-level scene rail. Action-only create entries
+// (for example Create Design System) are intentionally excluded.
 export const CREATE_RAIL_ORDER = [
-  'web-clone',
-  'deck',
   'prototype',
-  'wireframe',
-  'mobile',
+  'deck',
+  'image',
   'document',
   'hyperframes',
-  'webgl',
-  'live-artifact',
-  'image',
+  'web-clone',
   'video',
   'audio',
-  // Upstream's own trailing chip. Listing it explicitly is what keeps it ahead
-  // of the posicube block below — unlisted chips append after every listed one,
-  // so leaving it out would put upstream's chip last instead of ours.
-  'create-brand-kit',
+  'live-artifact',
+  'webgl',
   // posicube: this fork's own deliverables, last. Upstream's catalogue leads;
   // ours are the newer additions and trail it.
   //
-  // Being listed at all is the point: chips absent from this array fall back to
-  // catalog order, so a chip meant to be reachable has to appear here, not just
-  // in HOME_HERO_CHIPS. Trailing means the rail must be scrolled to reach them
-  // — deliberate, but it is why the labels carry their substrate in parentheses
-  // (`A2UI 화면 (shadcn)`): once a chip is off the first viewport, its name is
-  // the only thing distinguishing it from its neighbour.
+  // Listing is mandatory, not cosmetic: orderedCreateChips() maps this array
+  // through a find() and drops the misses, so it is a strict allowlist — a chip
+  // absent from here never reaches the rail at all, however well-formed its
+  // HOME_HERO_CHIPS entry is. Trailing means the rail must be scrolled to reach
+  // them — deliberate, but it is why the labels carry their substrate in
+  // parentheses (`A2UI 화면 (shadcn)`): once a chip is off the first viewport,
+  // its name is the only thing distinguishing it from its neighbour.
   'a2ui-screen',
   'a2ui-shadcn-screen',
   'next-project',
@@ -574,9 +565,9 @@ export const CREATE_RAIL_ORDER = [
 ] as const;
 
 // Chip ids the onboarding "build a design system" teaser intentionally omits.
-// Video and Audio are the trailing pure-media outputs in CREATE_RAIL_ORDER and
-// the least central to the design-system story, so they are the first to drop
-// when keeping the teaser chips to a single tidy row. Website clone starts
+// Video and Audio are pure-media outputs and the least central to the
+// design-system story, so they are omitted to keep the teaser chips to a
+// single tidy row. Website clone starts
 // from someone else's site rather than the user's design system, so it stays
 // off the design-system teaser too.
 const ONBOARDING_ARTIFACT_OMIT = new Set<string>(['web-clone', 'video', 'audio']);
@@ -589,19 +580,19 @@ export const ONBOARDING_ARTIFACT_CHIP_IDS = CREATE_RAIL_ORDER.filter(
   (id) => !ONBOARDING_ARTIFACT_OMIT.has(id),
 );
 
-// The `create` chips in rail-display order. Listed ids come first in
-// `CREATE_RAIL_ORDER`; any unlisted create chip (e.g. `create-brand-kit`)
-// trails in catalog order. Reordering through this helper keeps the catalog
-// data table stable while letting the rail lead with the slide deck.
+// The top-level Home chips in their exact product order. Internal/nested and
+// action-only catalog entries must not leak into the rail or template picker.
 export function orderedCreateChips(): HomeHeroChip[] {
   const create = chipsForGroup('create');
-  const listed = CREATE_RAIL_ORDER
+  return CREATE_RAIL_ORDER
     .map((id) => create.find((c) => c.id === id))
     .filter((c): c is HomeHeroChip => Boolean(c));
-  const listedIds = new Set<string>(CREATE_RAIL_ORDER);
-  const rest = create.filter((c) => !listedIds.has(c.id));
-  return [...listed, ...rest];
 }
+
+// Cross-surface handoff: the workspace tabs-bar "+" fan picks a template
+// outside the hero; HomeHero listens for this window event and applies the
+// chip exactly as if its own template picker had been clicked.
+export const HOME_APPLY_TEMPLATE_EVENT = 'open-design:home-apply-template';
 
 // Helper used by tests + the rail component to pull the chip metadata
 // off a click target without round-tripping through React state.
