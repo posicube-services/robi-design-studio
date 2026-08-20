@@ -35,36 +35,47 @@ wholesale — several were dropped on the way (see "What we removed").
 
 ## Contact surface with upstream — keep it small
 
-The value of this fork is that it stays mergeable. As of the re-base:
+The value of this fork is that it stays mergeable. As of the v0.19.2 sync:
 
 | Metric | Value |
 | --- | --- |
-| Files added (ours) | 1,283 |
-| Upstream files **modified** | 37 — of which **20 are i18n** |
-| Lines in those modifications | **+643 / −5** (i18n: +180, everything else: +463 / −5) |
+| Files added (ours) | 1,383 |
+| Upstream files **modified** | 59 — of which **20 are i18n** |
+| Lines in those modifications | **+893 / −68** (i18n: +279 / −19, everything else: +614 / −49) |
 | Upstream files **deleted** | 0 |
 
-Measured 2026-07-30 with `git diff --numstat --diff-filter=M
-a7e205939..posicube-main`. Measure against **the upstream commit actually
+Measured 2026-08-20 with `git diff --numstat --diff-filter=M
+228113ff99..posicube-main`. Measure against **the upstream commit actually
 merged**, not `upstream/main` — that ref moves, and diffing a newer
 `upstream/main` makes upstream's own later edits look like deletions on our
 side.
 
-Every modification is an *insertion at an existing extension point* — a union
-member, a switch case, one route registration, one JSX branch, a brand-token
-registration. No upstream logic was restructured.
+Nearly every modification is still an *insertion at an existing extension
+point* — a union member, a switch case, one route registration, one JSX branch,
+a brand-token registration. The branding work is the exception: it replaces
+upstream strings and identifiers in place, which is why it shows deletions where
+the re-base showed almost none.
 
-**Read the file count with the i18n split in mind.** 20 of the 37 are the 19
+**Read the file count with the i18n split in mind.** 20 of the 59 are the 19
 locale files plus `i18n/types.ts`, and they are touched purely because
 `types.ts` is a typed `Dict`: every user-facing string we add costs 20 upstream
 file touches and cannot be avoided (a missing locale is a typecheck error, per
-the root `AGENTS.md`). They are pure key insertions and have never conflicted.
-The number that actually predicts merge pain is the **17 non-i18n files** —
-keep *that* small.
+the root `AGENTS.md`). The number that actually predicts merge pain is the
+**39 non-i18n files** — keep *that* small.
+
+**That number is growing, and it cost us.** It was 17 at the re-base and is 39
+now; the branding pass (product name, app icons, appIds, installer identity)
+accounts for most of the growth. The 29-commit sync before it produced exactly
+one conflict. This 328-commit sync produced 35 — and the i18n files, which this
+document previously described as having "never conflicted", conflicted in all
+19, because we overrode `homeHero.subtitlePrefix` with posicube copy and
+upstream rewrote its own.
 
 **Preserve this property.** When a change appears to need upstream code
 reshaped, look for the extension point first; if there genuinely isn't one,
-prefer adding a new file over reshaping an existing one.
+prefer adding a new file over reshaping an existing one. Branding is the hardest
+category to hold to that rule — prefer a single overridable constant over a
+string replaced at each use site.
 
 ### The upstream files we touch, and why
 

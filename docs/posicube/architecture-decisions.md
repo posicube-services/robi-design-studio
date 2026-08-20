@@ -136,12 +136,14 @@ customer.
 below), so the choice between them is a real one — component library and styling
 model — rather than "the one that works and the one that doesn't".
 
-Tailwind fixes it for free rather than by construction: **150 of the 152 design
+Tailwind fixes it for free rather than by construction: **150 of the 153 design
 systems already ship a `tailwind-v4.css`** that maps their tokens onto Tailwind's
 theme (57 mappings across colour, spacing, type, radius, shadow and motion), and
-that file is byte-identical across brands — so a brand switch is one file. The two
-brands that lack it are `tom-modern` and our own `mui-minimal`, which is its own
-signal.
+that file is byte-identical across brands — so a brand switch is one file. The
+three brands that lack it are `tom-modern`, upstream's newer `cloudflare-kumo`,
+and our own `mui-minimal` — the last of which is its own signal.
+
+_(Re-measured 2026-08-20 on upstream v0.19.2, which added `cloudflare-kumo`.)_
 
 Verified before committing to it: the same spec rendered under Stripe,
 Neobrutalism and Apple produced three genuinely different screens, and the

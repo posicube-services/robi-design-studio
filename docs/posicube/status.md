@@ -1,11 +1,11 @@
 # Status and next steps
 
-_Last updated: 2026-08-03._
+_Last updated: 2026-08-20._
 
 ## Where we are
 
-The fork tracks upstream at `a7e205939` (v0.16.1 + 29 commits, merged
-2026-07-28), the react-project pipeline is wired end to end, and A2UI is a
+The fork tracks upstream at `228113ff99` (**v0.19.2**, 328 commits, merged
+2026-08-20), the react-project pipeline is wired end to end, and A2UI is a
 selectable variant. **The A2UI loop has now been run against a live daemon** —
 see "Verified by running it" below.
 
@@ -16,16 +16,24 @@ see "Verified by running it" below.
 | A2UI spec authoring (hard-gated) | working — renderer, 30-block catalog, Zod gate, `/a2ui` route, authoring skill |
 | Pick enforcement at creation (`plain` / `minimal` / `shadcn` / `a2ui` / `a2ui-shadcn`) | code complete — `a2ui`, `a2ui-shadcn`, `minimal` and `shadcn` exercised; `plain` not yet |
 | Live preview in the workspace | working — own root tab (`REACT_PREVIEW_TAB`), verified in the browser; A2UI projects preview `/a2ui`, not `/` |
-| Upstream tracking | working — 29-commit merge produced exactly one conflict (`.gitignore`) |
+| Upstream tracking | working — 328-commit merge to v0.19.2 produced 35 conflicts, all resolved; guard + typecheck clean. See `fork-maintenance.md` for why that number grew from 1 |
 | Brand tokens reach a generated project | working — the scaffolder writes them on both the run and CLI paths; confirmed in the browser on every substrate |
 | A2UI on shadcn + Tailwind (`a2ui-shadcn`) | working — seed complete (all 31 blocks, typecheck + build clean, the MUI seed's spec renders unchanged), and a real agent produced a gate-valid spec on its first attempt. It also duplicated the screen as React code — see below. |
 | A2UI on MUI Minimal (`a2ui`) | working — the token bridge lands the picked brand on MUI's theme |
 | shadcn + Tailwind at Tier 2 (`shadcn`) | working — `shadcn-next` / `shadcn-vite`, 39 files each, build clean; both confirmed in the browser |
-| Dark mode | out of scope by contract — 1 of 152 brands defines any dark construct (our own `mui-minimal`) |
+| Dark mode | out of scope by contract — 2 of 153 brands define any dark construct (our own `mui-minimal`, and upstream's newer `cloudflare-kumo`) |
 
-Upstream moved again during that same session (`89d6d4ef2`, one commit past what
-we merged). Nothing urgent; it is noted so the next sync starts from a known
-point rather than a surprise.
+The v0.19.2 sync is the first one that cost real effort: 35 conflicts against
+the previous sync's 1. The cause is recorded in `fork-maintenance.md` — the
+branding pass grew the non-i18n contact surface from 17 files to 39, and
+branding replaces upstream strings in place rather than inserting beside them.
+Worth reading before the next sync, and before the next in-place rename.
+
+What the sync brought in that touches our work: upstream reworked the release
+channel model into an open one (arbitrary channels now derive their descriptor
+rather than being hardcoded), replaced the workspace pages menu with a
+design-files tab, dropped `create-brand-kit` from the create rail, and added a
+153rd design system (Cloudflare Kumo UI).
 
 **Verified statically:** `pnpm guard` and `pnpm typecheck` pass on the
 post-merge tree.
@@ -169,7 +177,7 @@ closed.
 Two defects surfaced between the API-level check and that screen, both worth
 keeping:
 
-- **Brands do not all write plain hex.** Across the 152 packs the colour slots
+- **Brands do not all write plain hex.** Across the 153 packs the colour slots
   hold 1394 hex, **219 `color-mix()`**, **48 `var()` aliases** and 19
   rgb/hsl/oklch. Slack's `--surface-warm: var(--surface)` reached
   `createPaletteChannel` verbatim and killed the theme at module evaluation with
@@ -224,8 +232,11 @@ names its substrate for exactly that reason.
 
 ### Dark mode is out of scope, by contract
 
-Worth recording so it is not rediscovered as a bug: **1 of 152 design systems
-defines any dark-mode construct**, and that one is our own `mui-minimal`.
+Worth recording so it is not rediscovered as a bug: **2 of 153 design systems
+define any dark-mode construct** — our own `mui-minimal`, and `cloudflare-kumo`,
+which arrived with the v0.19.2 sync. That second one is the first sign of
+upstream movement here; if more brands start declaring dark tokens, the
+"out of scope by contract" reasoning below expires and this should be revisited.
 `github/tokens.css` has no dark block; neither does `design-systems/shadcn`
 (which ships a `system/kit.dark.html` reference fixture without dark tokens). So
 every generated screen is light-only because that is all a brand declares.
@@ -236,7 +247,7 @@ supplying what the token contract does not. The shadcn seed is light-only, so
 moving off MUI does drop that capability. Two ways to get it back, neither taken:
 derive a dark scheme from the light tokens (cheap, but a good dark theme is not
 an inversion — surfaces and contrast need re-deriving, so per-brand quality would
-be uneven), or add a dark layer to the token contract (152 brands, upstream-scale,
+be uneven), or add a dark layer to the token contract (153 brands, upstream-scale,
 but brand-authored and therefore correct).
 
 ### Open, in rough priority order
